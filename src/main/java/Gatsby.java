@@ -36,10 +36,10 @@ public class Gatsby {
         while (scanner.hasNextLine()) {
             System.out.println(LINE);
             String command = scanner.nextLine();
-            String[] commandParts = command.strip().split("\\s+");
+            String[] commandParts = command.strip().split("\\s+", 2);
             String action = commandParts[0].toLowerCase(Locale.ROOT);
+            String payload = commandParts.length > 1 ? commandParts[1] : "";
             System.out.println(LINE);
-
             if (isGoodbyeCommand(command)) {
                 System.out.println(GOODBYE_MESSAGE);
                 System.out.println(LINE);
@@ -62,8 +62,7 @@ public class Gatsby {
                 System.out.println(LINE);
             }
             else {
-                System.out.println(" added: " + command);
-                addToList(command);
+                addToList(action, payload, command);
                 System.out.println(LINE);
             }
         }
@@ -71,11 +70,28 @@ public class Gatsby {
     /**
      * Adds a user command into the list.
      *
-     * @param command the raw command entered by the user
+     * @param action the  command entered by the user
      */
-    private static void addToList(String command){
-        tasks[taskCount] = new Task(command);
-        taskCount++;
+    private static void addToList(String action, String payload, String command){
+        if (action.equals("todo")){
+            tasks[taskCount] = new Todo(payload);
+            taskCount++;
+        } else if (action.equals("deadline")){
+            String[] parts = payload.split("(?i)\\s+/by\\s+", 2);
+            tasks[taskCount] = new Deadline(parts[0], parts[1]);
+            taskCount++;
+        } else if (action.equals("event")){
+            String[] eventParts = payload.split("(?i)\\s+/from\\s+", 2);
+            String[] timeParts = eventParts[1].split("(?i)\\s+/to\\s+", 2);
+            tasks[taskCount] = new Event(eventParts[0], timeParts[0],  timeParts[1]);
+            taskCount++;
+        } else {
+            tasks[taskCount] = new Task(command);
+            taskCount++;
+        }
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("  " + tasks[taskCount - 1].toString());
+        System.out.println(" Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
