@@ -24,6 +24,17 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## After every code update:
+
+1. Review whether the change affects the console UI, and update `test/ui-test-plan.md` with or revise the relevant test case when needed.
+2. Invoke the project-specific `test-ui` skill by running:
+
+   ```bash
+   python3 .agents/skills/test-ui/scripts/run_ui_tests.py
+   ```
+
+3. If a UI test fails, stop and report the failing test, expected output, and actual output before making further changes. After fixing the code, rerun the skill.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
