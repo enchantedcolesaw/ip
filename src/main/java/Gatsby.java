@@ -1,6 +1,7 @@
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * A simple command-line chatbot that stores and lists tasks until the user enters the goodbye command.
@@ -12,11 +13,12 @@ public class Gatsby {
     private static final String LIST_COMMAND = "list";
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
+    private static final Set<String> ADD_COMMANDS = Set.of("todo", "deadline", "event");
+    private static final String DELETE_COMMAND = "delete";
     private static final String GOODBYE_MESSAGE = " Bye. Hope to see you again soon!";
     private static final String START_JOKE = "When did the Japanese invent eggs? A long tamago :)";
     private static final int MAX_TASKS = 100;
-    private static Task[] tasks = new Task[MAX_TASKS];
-    private static int taskCount = 0;
+    private static ArrayList<Task> tasks = new ArrayList<>(MAX_TASKS);
     /**
      * Starts Gatsby and processes commands entered through standard input.
      *
@@ -53,12 +55,12 @@ public class Gatsby {
                     }
                     int taskNum = Integer.parseInt(commandParts[1]);
                     int taskIndex = taskNum - 1;
-                    if (taskNum > taskCount || taskIndex < 0 || tasks[taskIndex] == null){
+                    if (taskNum > tasks.size() || taskIndex < 0 || tasks.get(taskIndex) == null){
                         throw new InvalidTaskException("OOPS! There's no such task in your list right now!");
                     }
-                    tasks[taskIndex].markDone();
+                    tasks.get(taskIndex).markDone();
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("  " + tasks[taskIndex].toString());
+                    System.out.println("  " + tasks.get(taskIndex).toString());
                 } catch (InvalidTaskException e){
                     System.out.println(e.getMessage());
                 } catch (EmptyMarkingException e) {
@@ -75,12 +77,12 @@ public class Gatsby {
                     }
                     int taskNum = Integer.parseInt(commandParts[1]);
                     int taskIndex = taskNum - 1;
-                    if (taskNum > taskCount || taskIndex < 0 || tasks[taskIndex] == null){
+                    if (taskNum > tasks.size() || taskIndex < 0 || tasks.get(taskIndex) == null){
                         throw new InvalidTaskException("OOPS! There's no such task in your list right now!");
                     }
-                    tasks[taskIndex].markUndone();
+                    tasks.get(taskIndex).markUndone();
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("  " + tasks[taskIndex].toString());
+                    System.out.println("  " + tasks.get(taskIndex).toString());
                 } catch (InvalidTaskException e){
                     System.out.println(e.getMessage());
                 } catch (EmptyMarkingException e) {
@@ -90,8 +92,7 @@ public class Gatsby {
                 } finally{
                     System.out.println(LINE);
                 }
-            }
-            else {
+            } else if (ADD_COMMANDS.contains(action)) {
                 try{
                     addToList(action, payload);
                 } catch (UnknownCommandException e){
@@ -101,6 +102,25 @@ public class Gatsby {
                 } finally {
                     System.out.println(LINE);
                 }
+            } else if (action.equals(DELETE_COMMAND)) {
+                try{
+                    if (commandParts.length < 2){
+                        throw new EmptyPayloadException("OOPS! How do I even delete nothing??");
+                    }
+                    int taskNum = Integer.parseInt(commandParts[1]);
+                    deleteFromList(taskNum);
+                } catch (EmptyPayloadException e){
+                    System.out.println(e.getMessage());
+                } catch (InvalidTaskException e){
+                    System.out.println(e.getMessage());
+                } catch (NumberFormatException e){
+                    System.out.println("OOPS! That's not a number! :(");
+                } finally{
+                    System.out.println(LINE);
+                }
+            } else{
+                System.out.println("Wait I don't recognise that yet :(");
+                System.out.println(LINE);
             }
         }
     }
@@ -114,13 +134,13 @@ public class Gatsby {
             if (payload.length() == 0){
                 throw new EmptyPayloadException("son the description of a todo cannot be empty -_-!");
             }
-            tasks[taskCount] = new Todo(payload);
+            tasks.add(tasks.size(),new Todo(payload));
         } else if (action.equals("deadline")){
             String[] parts = payload.split("(?i)\\s+/by\\s+", 2);
             if (parts.length == 1){
                 throw new EmptyPayloadException("son the there's no name or deadline for this deadline -_-!");
             }
-            tasks[taskCount] = new Deadline(parts[0], parts[1]);
+            tasks.add(tasks.size(), new Deadline(parts[0], parts[1]));
         } else if (action.equals("event")){
             String[] eventParts = payload.split("(?i)\\s+/from\\s+", 2);
             if (eventParts.length == 1){
@@ -130,14 +150,24 @@ public class Gatsby {
             if (timeParts.length == 1){
                 throw new EmptyPayloadException("son this event has no end time, it's infinite! -_-!");
             }
-            tasks[taskCount] = new Event(eventParts[0], timeParts[0],  timeParts[1]);
+            tasks.add(tasks.size(), new Event(eventParts[0], timeParts[0], timeParts[1]));
         } else {
             throw  new UnknownCommandException("I don't recognise this command :'((");
         }
-        taskCount++;
         System.out.println(" Got it. I've added this task:");
-        System.out.println("  " + tasks[taskCount - 1].toString());
-        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        System.out.println("  " + tasks.get(tasks.size() - 1).toString());
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+    }
+
+    private static void deleteFromList(int taskNum) throws InvalidTaskException {
+        if (taskNum < 1 || taskNum > tasks.size()){
+            throw  new InvalidTaskException("OOPS! Can't delete something that doesn't exist!");
+        }
+        Task removed = tasks.get(taskNum - 1);
+        tasks.remove(taskNum - 1);
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("  " + removed.toString());
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
     }
 
     /**
@@ -172,8 +202,11 @@ public class Gatsby {
      */
     private static void printList() {
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++){
-            System.out.println(" " + (i+1) + ". " +  tasks[i].toString());
+        if (tasks.isEmpty()){
+            System.out.println(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");
+        }
+        for (int i = 0; i < tasks.size(); i++){
+            System.out.println(" " + (i+1) + ". " +  tasks.get(i).toString());
         }
         System.out.println(LINE);
     }
