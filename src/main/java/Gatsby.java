@@ -47,23 +47,60 @@ public class Gatsby {
             } else if(isListCommand(command)) {
                 printList();
             } else if (action.equals(MARK_COMMAND)) {
-                int taskNum = Integer.parseInt(commandParts[1]);
-                int taskIndex = taskNum - 1;
-                tasks[taskIndex].markDone();
-                System.out.println(" Nice! I've marked this task as done:");
-                System.out.println("  " + tasks[taskIndex].toString());
-                System.out.println(LINE);
+                try {
+                    if (commandParts.length < 2){
+                        throw new EmptyMarkingException("OOPS! We can't be marking nothing as done!");
+                    }
+                    int taskNum = Integer.parseInt(commandParts[1]);
+                    int taskIndex = taskNum - 1;
+                    if (taskNum > taskCount || taskIndex < 0 || tasks[taskIndex] == null){
+                        throw new InvalidTaskException("OOPS! There's no such task in your list right now!");
+                    }
+                    tasks[taskIndex].markDone();
+                    System.out.println(" Nice! I've marked this task as done:");
+                    System.out.println("  " + tasks[taskIndex].toString());
+                } catch (InvalidTaskException e){
+                    System.out.println(e.getMessage());
+                } catch (EmptyMarkingException e) {
+                    System.out.println(e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("OOPS! That's not a number! :(");
+                } finally{
+                    System.out.println(LINE);
+                }
             } else if (action.equals(UNMARK_COMMAND)) {
-                int taskNum = Integer.parseInt(commandParts[1]);
-                int taskIndex = taskNum - 1;
-                tasks[taskIndex].markUndone();
-                System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println("  " + tasks[taskIndex].toString());
-                System.out.println(LINE);
+                try {
+                    if (commandParts.length < 2){
+                        throw new EmptyMarkingException("OOPS! We can't be marking nothing as undone!");
+                    }
+                    int taskNum = Integer.parseInt(commandParts[1]);
+                    int taskIndex = taskNum - 1;
+                    if (taskNum > taskCount || taskIndex < 0 || tasks[taskIndex] == null){
+                        throw new InvalidTaskException("OOPS! There's no such task in your list right now!");
+                    }
+                    tasks[taskIndex].markUndone();
+                    System.out.println(" OK, I've marked this task as not done yet:");
+                    System.out.println("  " + tasks[taskIndex].toString());
+                } catch (InvalidTaskException e){
+                    System.out.println(e.getMessage());
+                } catch (EmptyMarkingException e) {
+                    System.out.println(e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("OOPS! That's not a number! :(");
+                } finally{
+                    System.out.println(LINE);
+                }
             }
             else {
-                addToList(action, payload, command);
-                System.out.println(LINE);
+                try{
+                    addToList(action, payload);
+                } catch (UnknownCommandException e){
+                    System.out.println(e.getMessage());
+                } catch (EmptyPayloadException e){
+                    System.out.println(e.getMessage());
+                } finally {
+                    System.out.println(LINE);
+                }
             }
         }
     }
@@ -72,23 +109,32 @@ public class Gatsby {
      *
      * @param action the  command entered by the user
      */
-    private static void addToList(String action, String payload, String command){
+    private static void addToList(String action, String payload) throws UnknownCommandException, EmptyPayloadException {
         if (action.equals("todo")){
+            if (payload.length() == 0){
+                throw new EmptyPayloadException("son the description of a todo cannot be empty -_-!");
+            }
             tasks[taskCount] = new Todo(payload);
-            taskCount++;
         } else if (action.equals("deadline")){
             String[] parts = payload.split("(?i)\\s+/by\\s+", 2);
+            if (parts.length == 1){
+                throw new EmptyPayloadException("son the there's no name or deadline for this deadline -_-!");
+            }
             tasks[taskCount] = new Deadline(parts[0], parts[1]);
-            taskCount++;
         } else if (action.equals("event")){
             String[] eventParts = payload.split("(?i)\\s+/from\\s+", 2);
+            if (eventParts.length == 1){
+                throw new EmptyPayloadException("son there's no event name/timing for this event -_-!");
+            }
             String[] timeParts = eventParts[1].split("(?i)\\s+/to\\s+", 2);
+            if (timeParts.length == 1){
+                throw new EmptyPayloadException("son this event has no end time, it's infinite! -_-!");
+            }
             tasks[taskCount] = new Event(eventParts[0], timeParts[0],  timeParts[1]);
-            taskCount++;
         } else {
-            tasks[taskCount] = new Task(command);
-            taskCount++;
+            throw  new UnknownCommandException("I don't recognise this command :'((");
         }
+        taskCount++;
         System.out.println(" Got it. I've added this task:");
         System.out.println("  " + tasks[taskCount - 1].toString());
         System.out.println(" Now you have " + taskCount + " tasks in the list.");
