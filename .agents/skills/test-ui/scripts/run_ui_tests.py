@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -138,6 +139,11 @@ def main() -> int:
             return 1
 
         for case in cases:
+            # Each case starts with no data folder at all, so cases stay
+            # independent and every case also exercises the first-run state.
+            data_dir = ROOT / "data"
+            if data_dir.exists():
+                shutil.rmtree(data_dir)
             try:
                 run_result = subprocess.run(
                     ["java", "-cp", str(classes), "Gatsby"],
