@@ -1,35 +1,26 @@
-import java.util.Set;
-
 /**
- * The commands that Gatsby understands from user input.
+ * An executable action requested by the user.
  *
- * Each command stores the input words that can be used to invoke it. The
- * {@link Parser} uses these aliases while interpreting user input.
+ * Concrete commands gradually take responsibility for one user action. This
+ * base class gives Gatsby a common execution protocol and an exit signal.
  */
-public enum Command {
-    BYE("bye", "byebye", "bye bye"),
-    LIST("list"),
-    MARK("mark"),
-    UNMARK("unmark"),
-    TODO("todo"),
-    DEADLINE("deadline"),
-    EVENT("event"),
-    DELETE("delete"),
-    UNKNOWN();
-
-    private final Set<String> aliases;
-
-    Command(String... aliases) {
-        this.aliases = Set.of(aliases);
-    }
+public abstract class Command {
+    /**
+     * Performs this command using Gatsby's collaborators.
+     *
+     * @param tasks the current task list
+     * @param ui the console interaction handler
+     * @param storage the task persistence handler
+     * @throws GatsbyException when the command cannot be completed
+     */
+    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException;
 
     /**
-     * Checks whether this command can be invoked by the supplied normalized word.
+     * Checks whether this command ends the current Gatsby session.
      *
-     * @param input a lowercase command word or whole-line alias
-     * @return true when this command has the supplied alias
+     * @return false for ordinary commands
      */
-    boolean matchesAlias(String input) {
-        return aliases.contains(input);
+    public boolean isExit() {
+        return false;
     }
 }

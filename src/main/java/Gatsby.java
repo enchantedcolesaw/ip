@@ -62,21 +62,22 @@ public class Gatsby {
             }
 
             Parser.ParsedCommand parsedCommand = parser.parse(input);
-            Command commandType = parsedCommand.getCommand();
+            CommandType commandType = parsedCommand.getCommand();
             String payload = parsedCommand.getPayload();
 
-            if (commandType == Command.BYE) {
-                ui.printLine(" Bye. Hope to see you again soon!");
-                return true;
-            } else if (commandType == Command.LIST) {
+            if (commandType == CommandType.BYE) {
+                Command command = new ExitCommand();
+                command.execute(tasks, ui, null);
+                return command.isExit();
+            } else if (commandType == CommandType.LIST) {
                 printList();
-            } else if (commandType == Command.MARK || commandType == Command.UNMARK) {
+            } else if (commandType == CommandType.MARK || commandType == CommandType.UNMARK) {
                 setDone(commandType, payload);
-            } else if (commandType == Command.TODO
-                    || commandType == Command.DEADLINE
-                    || commandType == Command.EVENT) {
+            } else if (commandType == CommandType.TODO
+                    || commandType == CommandType.DEADLINE
+                    || commandType == CommandType.EVENT) {
                 addToList(commandType, payload);
-            } else if (commandType == Command.DELETE) {
+            } else if (commandType == CommandType.DELETE) {
                 deleteFromList(payload);
             } else {
                 throw new UnknownCommandException(" Wait I don't recognise that yet :(\n"
@@ -95,12 +96,12 @@ public class Gatsby {
     /**
      * Marks a task as done or not done.
      *
-     * @param command either {@link Command#MARK} or {@link Command#UNMARK}
+     * @param command either {@link CommandType#MARK} or {@link CommandType#UNMARK}
      * @param payload the text typed after the command, expected to be a task number
      * @throws GatsbyException when the number is missing, not a number, or out of range
      */
-    private static void setDone(Command command, String payload) throws GatsbyException {
-        boolean isMarking = command == Command.MARK;
+    private static void setDone(CommandType command, String payload) throws GatsbyException {
+        boolean isMarking = command == CommandType.MARK;
         if (payload.isEmpty()) {
             throw new EmptyMarkingException(isMarking
                     ? " OOPS! We can't be marking nothing as done!"
@@ -136,11 +137,11 @@ public class Gatsby {
      * @param payload the text typed after the command
      * @throws GatsbyException when required parts of the description are missing
      */
-    private static void addToList(Command command, String payload) throws GatsbyException {
+    private static void addToList(CommandType command, String payload) throws GatsbyException {
         Task newTask;
-        if (command == Command.TODO) {
+        if (command == CommandType.TODO) {
             newTask = new Todo(requireText(payload, " son the description of a todo cannot be empty -_-!"));
-        } else if (command == Command.DEADLINE) {
+        } else if (command == CommandType.DEADLINE) {
             String[] parts = splitOnKeyword(payload, "/by", " son there's no name or deadline for this deadline -_-!");
             String description = requireText(parts[0], " son this deadline has no description -_-!");
             String deadline = requireText(parts[1], " son this deadline has no date after /by -_-!");
@@ -148,7 +149,7 @@ public class Gatsby {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
             LocalDateTime date = LocalDateTime.parse(normalisedDeadline, formatter);
             newTask = new Deadline(description, date);
-        } else if (command == Command.EVENT) {
+        } else if (command == CommandType.EVENT) {
             String[] eventParts = splitOnKeyword(payload, "/from", " son there's no event name/timing for this event -_-!");
             String[] timeParts = splitOnKeyword(eventParts[1], "/to", " son this event has no end time, it's infinite! -_-!");
             String eventDescription = requireText(eventParts[0], " son this event has no description -_-!");

@@ -27,28 +27,28 @@ public class Parser {
      * recognized from the first word so they can be followed by a payload.
      *
      * @param input the trimmed input line
-     * @return the matching command, or {@link Command#UNKNOWN}
+     * @return the matching command type, or {@link CommandType#UNKNOWN}
      */
-    private Command identifyCommand(String input) {
+    private CommandType identifyCommand(String input) {
         String normalizedInput = input.toLowerCase(Locale.ROOT)
                 .replaceAll("\\s+", " ");
 
-        if (Command.BYE.matchesAlias(normalizedInput)) {
-            return Command.BYE;
+        if (CommandType.BYE.matchesAlias(normalizedInput)) {
+            return CommandType.BYE;
         }
-        if (Command.LIST.matchesAlias(normalizedInput)) {
-            return Command.LIST;
+        if (CommandType.LIST.matchesAlias(normalizedInput)) {
+            return CommandType.LIST;
         }
 
         String action = normalizedInput.split("\\s+", 2)[0];
-        for (Command command : Command.values()) {
-            if (command != Command.BYE && command != Command.LIST
+        for (CommandType command : CommandType.values()) {
+            if (command != CommandType.BYE && command != CommandType.LIST
                     && command.matchesAlias(action)) {
                 return command;
             }
         }
 
-        return Command.UNKNOWN;
+        return CommandType.UNKNOWN;
     }
 
     /**
@@ -56,7 +56,7 @@ public class Parser {
      */
     public static class ParsedCommand {
         /** The command recognized from the input. */
-        private final Command command;
+        private final CommandType command;
 
         /** The text after the command, or an empty string when there is none. */
         private final String payload;
@@ -67,7 +67,7 @@ public class Parser {
          * @param command the recognized command
          * @param payload the text after the command
          */
-        public ParsedCommand(Command command, String payload) {
+        public ParsedCommand(CommandType command, String payload) {
             this.command = command;
             this.payload = payload;
         }
@@ -77,7 +77,7 @@ public class Parser {
          *
          * @return the command type
          */
-        public Command getCommand() {
+        public CommandType getCommand() {
             return command;
         }
 
