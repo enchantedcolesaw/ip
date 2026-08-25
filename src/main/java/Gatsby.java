@@ -1,6 +1,3 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
  * A simple command-line chatbot that stores tasks and remembers them between runs.
  *
@@ -9,12 +6,6 @@ import java.time.format.DateTimeFormatter;
  * reported as a friendly message; the chatbot keeps running.
  */
 public class Gatsby {
-    /**
-     * The vertical bar separates fields in the save file, so it cannot appear
-     * inside a description or a date without making the saved line ambiguous.
-     */
-    private static final String FIELD_SEPARATOR = "|";
-
     /** Tasks are loaded from the save file so the list survives between runs. */
     private static TaskList tasks = new TaskList(Storage.load());
 
@@ -77,7 +68,13 @@ public class Gatsby {
             } else if (commandType == CommandType.TODO
                     || commandType == CommandType.DEADLINE
                     || commandType == CommandType.EVENT) {
-                addToList(commandType, payload);
+                Command command = switch (commandType) {
+                    case TODO -> new TodoCommand(payload);
+                    case DEADLINE -> new DeadlineCommand(payload);
+                    case EVENT -> new EventCommand(payload);
+                    default -> throw new UnknownCommandException(" I don't recognise this command :'((");
+                };
+                command.execute(tasks, ui, null);
             } else if (commandType == CommandType.DELETE) {
                 deleteFromList(payload);
             } else {
@@ -132,48 +129,6 @@ public class Gatsby {
     }
 
     /**
-     * Adds a new task of the requested type to the list.
-     *
-     * @param command the type of task to create
-     * @param payload the text typed after the command
-     * @throws GatsbyException when required parts of the description are missing
-     */
-    private static void addToList(CommandType command, String payload) throws GatsbyException {
-        Task newTask;
-        if (command == CommandType.TODO) {
-            newTask = new Todo(requireText(payload, " son the description of a todo cannot be empty -_-!"));
-        } else if (command == CommandType.DEADLINE) {
-            String[] parts = splitOnKeyword(payload, "/by", " son there's no name or deadline for this deadline -_-!");
-            String description = requireText(parts[0], " son this deadline has no description -_-!");
-            String deadline = requireText(parts[1], " son this deadline has no date after /by -_-!");
-            String normalisedDeadline = deadline.replace('/', '-');
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-            LocalDateTime date = LocalDateTime.parse(normalisedDeadline, formatter);
-            newTask = new Deadline(description, date);
-        } else if (command == CommandType.EVENT) {
-            String[] eventParts = splitOnKeyword(payload, "/from", " son there's no event name/timing for this event -_-!");
-            String[] timeParts = splitOnKeyword(eventParts[1], "/to", " son this event has no end time, it's infinite! -_-!");
-            String eventDescription = requireText(eventParts[0], " son this event has no description -_-!");
-            String start = requireText(timeParts[0], " son this event has no start time after /from -_-!");
-            String end = requireText(timeParts[1],  " son this event has no end time after /to -_-!");
-            String normalisedStart = start.replace('/', '-');
-            String normalisedEnd = end.replace('/', '-');
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-            LocalDateTime startDate = LocalDateTime.parse(normalisedStart, formatter);
-            LocalDateTime endDate = LocalDateTime.parse(normalisedEnd, formatter);
-            newTask = new Event(eventDescription, startDate, endDate);
-        } else {
-            throw new UnknownCommandException(" I don't recognise this command :'((");
-        }
-
-        tasks.add(newTask);
-        Storage.save(tasks.asList());
-        ui.printLine(" Got it. I've added this task:");
-        ui.printLine("  " + newTask);
-        printTaskCount();
-    }
-
-    /**
      * Removes a task from the list.
      *
      * @param payload the text typed after the command, expected to be a task number
@@ -215,46 +170,6 @@ public class Gatsby {
                     + "! Pick a number from 1 to " + tasks.size() + ".");
         }
         return taskNumber - 1;
-    }
-
-    /**
-     * Checks that a description or date is usable before a task is built from it.
-     *
-     * @param text the candidate text
-     * @param errorMessage the message shown when the text is empty
-     * @return the text with surrounding spaces removed
-     * @throws EmptyPayloadException when the text is empty or contains the field separator
-     */
-    private static String requireText(String text, String errorMessage) throws EmptyPayloadException {
-        String trimmedText = text.strip();
-        if (trimmedText.isEmpty()) {
-            throw new EmptyPayloadException(errorMessage);
-        }
-        if (trimmedText.contains(FIELD_SEPARATOR)) {
-            throw new EmptyPayloadException(" OOPS! Please leave out the \"" + FIELD_SEPARATOR
-                    + "\" character; I use it to separate fields in my save file.");
-        }
-        return trimmedText;
-    }
-
-    /**
-     * Splits a payload around a keyword such as {@code /by} or {@code /from}.
-     *
-     * The split tolerates missing spaces around the keyword and any capitalisation,
-     * so "deadline report/by Friday" and "deadline report /BY Friday" both work.
-     *
-     * @param payload the text to split
-     * @param keyword the keyword to split on
-     * @param errorMessage the message shown when the keyword is absent
-     * @return the text before and after the keyword, in that order
-     * @throws EmptyPayloadException when the keyword does not appear
-     */
-    private static String[] splitOnKeyword(String payload, String keyword, String errorMessage) throws EmptyPayloadException {
-        String[] parts = payload.split("(?i)\\s*" + keyword + "\\s*", 2);
-        if (parts.length < 2) {
-            throw new EmptyPayloadException(errorMessage);
-        }
-        return parts;
     }
 
     /** Prints how many tasks are in the list, using correct singular/plural wording. */
