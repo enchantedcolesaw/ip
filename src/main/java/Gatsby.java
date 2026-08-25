@@ -21,6 +21,9 @@ public class Gatsby {
     /** Handles Gatsby's console input and output. */
     private static final Ui ui = new Ui();
 
+    /** Converts raw input lines into commands and payloads. */
+    private static final Parser parser = new Parser();
+
     /**
      * Starts Gatsby and processes commands entered through standard input.
      *
@@ -58,9 +61,9 @@ public class Gatsby {
                 return false;
             }
 
-            String[] commandParts = trimmedInput.split("\\s+", 2);
-            String payload = commandParts.length > 1 ? commandParts[1].strip() : "";
-            Command commandType = Command.fromInput(trimmedInput);
+            Parser.ParsedCommand parsedCommand = parser.parse(input);
+            Command commandType = parsedCommand.getCommand();
+            String payload = parsedCommand.getPayload();
 
             if (commandType == Command.BYE) {
                 ui.printLine(" Bye. Hope to see you again soon!");

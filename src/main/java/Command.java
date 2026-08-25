@@ -1,12 +1,10 @@
-import java.util.Locale;
 import java.util.Set;
 
 /**
  * The commands that Gatsby understands from user input.
  *
  * Each command stores the input words that can be used to invoke it. The
- * parser keeps goodbye and list commands as whole-line commands, matching
- * Gatsby's existing input behaviour.
+ * {@link Parser} uses these aliases while interpreting user input.
  */
 public enum Command {
     BYE("bye", "byebye", "bye bye"),
@@ -26,31 +24,12 @@ public enum Command {
     }
 
     /**
-     * Converts a raw user command into the corresponding command type.
+     * Checks whether this command can be invoked by the supplied normalized word.
      *
-     * @param input the complete line entered by the user
-     * @return the matching command, or {@link #UNKNOWN} when no command matches
+     * @param input a lowercase command word or whole-line alias
+     * @return true when this command has the supplied alias
      */
-    public static Command fromInput(String input) {
-        String normalizedInput = input.strip()
-                .toLowerCase(Locale.ROOT)
-                .replaceAll("\\s+", " ");
-
-        if (BYE.aliases.contains(normalizedInput)) {
-            return BYE;
-        }
-
-        if (LIST.aliases.contains(normalizedInput)) {
-            return LIST;
-        }
-
-        String action = normalizedInput.split("\\s+", 2)[0];
-        for (Command command : values()) {
-            if (command != BYE && command != LIST && command.aliases.contains(action)) {
-                return command;
-            }
-        }
-
-        return UNKNOWN;
+    boolean matchesAlias(String input) {
+        return aliases.contains(input);
     }
 }
