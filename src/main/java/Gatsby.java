@@ -63,8 +63,12 @@ public class Gatsby {
             } else if (commandType == CommandType.LIST) {
                 Command command = new ListCommand();
                 command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.MARK || commandType == CommandType.UNMARK) {
-                setDone(commandType, payload);
+            } else if (commandType == CommandType.MARK) {
+                Command command = new MarkCommand(payload);
+                command.execute(tasks, ui, null);
+            } else if (commandType == CommandType.UNMARK) {
+                Command command = new UnmarkCommand(payload);
+                command.execute(tasks, ui, null);
             } else if (commandType == CommandType.TODO
                     || commandType == CommandType.DEADLINE
                     || commandType == CommandType.EVENT) {
@@ -76,7 +80,8 @@ public class Gatsby {
                 };
                 command.execute(tasks, ui, null);
             } else if (commandType == CommandType.DELETE) {
-                deleteFromList(payload);
+                Command command = new DeleteCommand(payload);
+                command.execute(tasks, ui, null);
             } else {
                 throw new UnknownCommandException(" Wait I don't recognise that yet :(\n"
                         + " I know: todo, deadline, event, list, mark, unmark, delete, bye.");
@@ -89,93 +94,6 @@ public class Gatsby {
             ui.showSeparator();
         }
         return false;
-    }
-
-    /**
-     * Marks a task as done or not done.
-     *
-     * @param command either {@link CommandType#MARK} or {@link CommandType#UNMARK}
-     * @param payload the text typed after the command, expected to be a task number
-     * @throws GatsbyException when the number is missing, not a number, or out of range
-     */
-    private static void setDone(CommandType command, String payload) throws GatsbyException {
-        boolean isMarking = command == CommandType.MARK;
-        if (payload.isEmpty()) {
-            throw new EmptyMarkingException(isMarking
-                    ? " OOPS! We can't be marking nothing as done!"
-                    : " OOPS! We can't be marking nothing as undone!");
-        }
-
-        Task task = tasks.get(parseTaskIndex(payload));
-        boolean wasAlreadyInState = task.isDone() == isMarking;
-
-        if (isMarking) {
-            task.markDone();
-        } else {
-            task.markUndone();
-        }
-        Storage.save(tasks.asList());
-
-        if (wasAlreadyInState) {
-            ui.printLine(isMarking
-                    ? " That one was already done, but sure:"
-                    : " That one wasn't done yet, but sure:");
-        } else {
-            ui.printLine(isMarking
-                    ? " Nice! I've marked this task as done:"
-                    : " OK, I've marked this task as not done yet:");
-        }
-        ui.printLine("  " + task);
-    }
-
-    /**
-     * Removes a task from the list.
-     *
-     * @param payload the text typed after the command, expected to be a task number
-     * @throws GatsbyException when the number is missing, not a number, or out of range
-     */
-    private static void deleteFromList(String payload) throws GatsbyException {
-        if (payload.isEmpty()) {
-            throw new EmptyPayloadException(" OOPS! How do I even delete nothing??");
-        }
-        Task removed = tasks.remove(parseTaskIndex(payload));
-        Storage.save(tasks.asList());
-        ui.printLine(" Noted. I've removed this task:");
-        ui.printLine("  " + removed);
-        printTaskCount();
-    }
-
-    /**
-     * Converts the text after a command into a valid index into the task list.
-     *
-     * Doing this in one place means every command reports the same problems the same
-     * way: not a number, out of range, or given when the list is empty.
-     *
-     * @param payload the text typed after the command
-     * @return the zero-based index of the task the user meant
-     * @throws InvalidTaskException when the text is not a task number that exists
-     */
-    private static int parseTaskIndex(String payload) throws InvalidTaskException {
-        int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(payload);
-        } catch (NumberFormatException e) {
-            throw new InvalidTaskException(" OOPS! \"" + payload + "\" isn't a task number! :(");
-        }
-        if (tasks.isEmpty()) {
-            throw new InvalidTaskException(" OOPS! Your list is empty, so there's no task " + taskNumber + "!");
-        }
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new InvalidTaskException(" OOPS! There's no task " + taskNumber
-                    + "! Pick a number from 1 to " + tasks.size() + ".");
-        }
-        return taskNumber - 1;
-    }
-
-    /** Prints how many tasks are in the list, using correct singular/plural wording. */
-    private static void printTaskCount() {
-        ui.printLine(" Now you have " + tasks.size()
-                + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
     }
 
 }

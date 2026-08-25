@@ -81,4 +81,79 @@ public abstract class Command {
         }
         return parts;
     }
+
+    /**
+     * Resolves a one-based user task number to the corresponding zero-based index.
+     *
+     * @param tasks the current task list
+     * @param payload the text entered after a task-selection command
+     * @return the zero-based index of the selected task
+     * @throws InvalidTaskException when the payload is not a valid task number
+     */
+    protected int parseTaskIndex(TaskList tasks, String payload) throws InvalidTaskException {
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(payload);
+        } catch (NumberFormatException e) {
+            throw new InvalidTaskException(" OOPS! \"" + payload + "\" isn't a task number! :(");
+        }
+        if (tasks.isEmpty()) {
+            throw new InvalidTaskException(" OOPS! Your list is empty, so there's no task "
+                    + taskNumber + "!");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new InvalidTaskException(" OOPS! There's no task " + taskNumber
+                    + "! Pick a number from 1 to " + tasks.size() + ".");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
+     * Marks or unmarks one task and reports whether its state actually changed.
+     *
+     * @param tasks the current task list
+     * @param ui the console interaction handler
+     * @param payload the selected task number
+     * @param isMarking true to mark the task, false to unmark it
+     * @throws GatsbyException when the task number is missing or invalid
+     */
+    protected void updateTaskStatus(TaskList tasks, Ui ui, String payload, boolean isMarking)
+            throws GatsbyException {
+        if (payload.isEmpty()) {
+            throw new EmptyMarkingException(isMarking
+                    ? " OOPS! We can't be marking nothing as done!"
+                    : " OOPS! We can't be marking nothing as undone!");
+        }
+
+        Task task = tasks.get(parseTaskIndex(tasks, payload));
+        boolean wasAlreadyInState = task.isDone() == isMarking;
+        if (isMarking) {
+            task.markDone();
+        } else {
+            task.markUndone();
+        }
+        Storage.save(tasks.asList());
+
+        if (wasAlreadyInState) {
+            ui.printLine(isMarking
+                    ? " That one was already done, but sure:"
+                    : " That one wasn't done yet, but sure:");
+        } else {
+            ui.printLine(isMarking
+                    ? " Nice! I've marked this task as done:"
+                    : " OK, I've marked this task as not done yet:");
+        }
+        ui.printLine("  " + task);
+    }
+
+    /**
+     * Prints the current task count with correct singular/plural wording.
+     *
+     * @param tasks the current task list
+     * @param ui the console interaction handler
+     */
+    protected void printTaskCount(TaskList tasks, Ui ui) {
+        ui.printLine(" Now you have " + tasks.size()
+                + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
+    }
 }
