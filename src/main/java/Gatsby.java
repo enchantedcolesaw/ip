@@ -70,7 +70,8 @@ public class Gatsby {
                 command.execute(tasks, ui, null);
                 return command.isExit();
             } else if (commandType == CommandType.LIST) {
-                printList();
+                Command command = new ListCommand();
+                command.execute(tasks, ui, null);
             } else if (commandType == CommandType.MARK || commandType == CommandType.UNMARK) {
                 setDone(commandType, payload);
             } else if (commandType == CommandType.TODO
@@ -262,17 +263,4 @@ public class Gatsby {
                 + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
     }
 
-    /**
-     * Prints the latest snapshot of the task list at the time of this method call.
-     */
-    private static void printList() {
-        ui.printLine(" Here are the tasks in your list:");
-        if (tasks.isEmpty()) {
-            ui.printLine(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");
-            return;
-        }
-        for (int i = 0; i < tasks.size(); i++) {
-            ui.printLine(" " + (i + 1) + ". " + tasks.get(i));
-        }
-    }
 }
