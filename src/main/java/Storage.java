@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -116,7 +118,7 @@ public class Storage {
      * The field count is checked exactly, so a line with missing or extra fields is
      * treated as corrupted rather than silently reconstructed as the wrong task.
      *
-     * @param line a single line from the save file, e.g. {@code D | 0 | return book | June 6th}
+     * @param line a single line from the save file, e.g. {@code D | 0 | return book | 2019-12-02T18:00}
      * @return the reconstructed task
      * @throws GatsbyException when the line is malformed
      */
@@ -140,10 +142,10 @@ public class Storage {
         if (type.equals("T") && parts.length == TODO_FIELDS) {
             task = new Todo(description);
         } else if (type.equals("D") && parts.length == DEADLINE_FIELDS && !parts[3].isEmpty()) {
-            task = new Deadline(description, parts[3]);
+            task = new Deadline(description, parseSavedDateTime(parts[3]));
         } else if (type.equals("E") && parts.length == EVENT_FIELDS
                 && !parts[3].isEmpty() && !parts[4].isEmpty()) {
-            task = new Event(description, parts[3], parts[4]);
+            task = new Event(description, parseSavedDateTime(parts[3]), parseSavedDateTime(parts[4]));
         } else {
             throw new UnknownCommandException("unrecognised task type or wrong number of fields");
         }
@@ -152,5 +154,20 @@ public class Storage {
             task.markDone();
         }
         return task;
+    }
+
+    /**
+     * Parses an ISO date-time used for deadline or event values in the save file.
+     *
+     * @param value the saved date-time
+     * @return the parsed date-time
+     * @throws GatsbyException when the saved value is not a valid date-time
+     */
+    private static LocalDateTime parseSavedDateTime(String value) throws GatsbyException {
+        try {
+            return LocalDateTime.parse(value);
+        } catch (DateTimeParseException e) {
+            throw new EmptyPayloadException("date-time is invalid");
+        }
     }
 }
