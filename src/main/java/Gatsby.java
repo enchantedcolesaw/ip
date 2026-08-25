@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * A simple command-line chatbot that stores tasks and remembers them between runs.
@@ -146,23 +148,27 @@ public class Gatsby {
     private static void addToList(Command command, String payload) throws GatsbyException {
         Task newTask;
         if (command == Command.TODO) {
-            newTask = new Todo(requireText(payload,
-                    " son the description of a todo cannot be empty -_-!"));
+            newTask = new Todo(requireText(payload, " son the description of a todo cannot be empty -_-!"));
         } else if (command == Command.DEADLINE) {
-            String[] parts = splitOnKeyword(payload, "/by",
-                    " son there's no name or deadline for this deadline -_-!");
-            newTask = new Deadline(
-                    requireText(parts[0], " son this deadline has no description -_-!"),
-                    requireText(parts[1], " son this deadline has no date after /by -_-!"));
+            String[] parts = splitOnKeyword(payload, "/by", " son there's no name or deadline for this deadline -_-!");
+            String description = requireText(parts[0], " son this deadline has no description -_-!");
+            String deadline = requireText(parts[1], " son this deadline has no date after /by -_-!");
+            String normalisedDeadline = deadline.replace('/', '-');
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            LocalDateTime date = LocalDateTime.parse(normalisedDeadline, formatter);
+            newTask = new Deadline(description, date);
         } else if (command == Command.EVENT) {
-            String[] eventParts = splitOnKeyword(payload, "/from",
-                    " son there's no event name/timing for this event -_-!");
-            String[] timeParts = splitOnKeyword(eventParts[1], "/to",
-                    " son this event has no end time, it's infinite! -_-!");
-            newTask = new Event(
-                    requireText(eventParts[0], " son this event has no description -_-!"),
-                    requireText(timeParts[0], " son this event has no start time after /from -_-!"),
-                    requireText(timeParts[1], " son this event has no end time after /to -_-!"));
+            String[] eventParts = splitOnKeyword(payload, "/from", " son there's no event name/timing for this event -_-!");
+            String[] timeParts = splitOnKeyword(eventParts[1], "/to", " son this event has no end time, it's infinite! -_-!");
+            String eventDescription = requireText(eventParts[0], " son this event has no description -_-!");
+            String start = requireText(timeParts[0], " son this event has no start time after /from -_-!");
+            String end = requireText(timeParts[1],  " son this event has no end time after /to -_-!");
+            String normalisedStart = start.replace('/', '-');
+            String normalisedEnd = end.replace('/', '-');
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            LocalDateTime startDate = LocalDateTime.parse(normalisedStart, formatter);
+            LocalDateTime endDate = LocalDateTime.parse(normalisedEnd, formatter);
+            newTask = new Event(eventDescription, startDate, endDate);
         } else {
             throw new UnknownCommandException(" I don't recognise this command :'((");
         }
@@ -250,8 +256,7 @@ public class Gatsby {
      * @return the text before and after the keyword, in that order
      * @throws EmptyPayloadException when the keyword does not appear
      */
-    private static String[] splitOnKeyword(String payload, String keyword, String errorMessage)
-            throws EmptyPayloadException {
+    private static String[] splitOnKeyword(String payload, String keyword, String errorMessage) throws EmptyPayloadException {
         String[] parts = payload.split("(?i)\\s*" + keyword + "\\s*", 2);
         if (parts.length < 2) {
             throw new EmptyPayloadException(errorMessage);

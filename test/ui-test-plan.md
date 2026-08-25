@@ -2,6 +2,10 @@
 
 The tests below exercise Gatsby through standard input. Each expected-output line must appear in the program output in the listed order. The test runner ignores the banner, separators, and indentation, while still checking the meaningful output lines.
 
+Level-8 date/time tests use input in the format `yyyy-MM-dd HHmm` and display
+values in the format `MMM dd yyyy HH:mm:ss`. Saved date/time values use ISO
+format, such as `2019-12-02T18:00`.
+
 ## Test 1: Create and list all Level-4 task types
 
 Aim: Verify that ToDos, deadlines, and events are instantiated with the correct descriptions and date/time strings.
@@ -9,8 +13,8 @@ Aim: Verify that ToDos, deadlines, and events are instantiated with the correct 
 Input:
 ```text
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-12-02 1800
+event project meeting /from 2019-12-02 1400 /to 2019-12-02 1600
 list
 bye
 ```
@@ -18,8 +22,8 @@ bye
 Expected output:
 ```text
 [T][ ] borrow book
-[D][ ] return book (by: Sunday)
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[D][ ] return book (by: Dec 02 2019 18:00:00)
+[E][ ] project meeting (from: Dec 02 2019 14:00:00 to: Dec 02 2019 16:00:00)
 ```
 
 ## Test 2: Preserve multi-word descriptions
@@ -29,8 +33,8 @@ Aim: Verify that the description can contain more than two words and is not trun
 Input:
 ```text
 todo borrow a really thick book
-deadline submit the final software engineering report /by Friday 5pm
-event team project discussion /from Monday afternoon /to Tuesday morning
+deadline submit the final software engineering report /by 2019-12-03 0900
+event team project discussion /from 2019-12-03 1400 /to 2019-12-03 1600
 list
 bye
 ```
@@ -38,8 +42,8 @@ bye
 Expected output:
 ```text
 [T][ ] borrow a really thick book
-[D][ ] submit the final software engineering report (by: Friday 5pm)
-[E][ ] team project discussion (from: Monday afternoon to: Tuesday morning)
+[D][ ] submit the final software engineering report (by: Dec 03 2019 09:00:00)
+[E][ ] team project discussion (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
 ```
 
 ## Test 3: Mark and unmark typed tasks
@@ -49,8 +53,8 @@ Aim: Verify that inherited mark and unmark behavior works for a deadline and an 
 Input:
 ```text
 todo read book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-12-02 1800
+event project meeting /from 2019-12-02 1400 /to 2019-12-02 1600
 mark 2
 unmark 2
 mark 3
@@ -60,8 +64,8 @@ bye
 
 Expected output:
 ```text
-[D][X] return book (by: Sunday)
-[E][X] project meeting (from: Mon 2pm to: 4pm)
+[D][X] return book (by: Dec 02 2019 18:00:00)
+[E][X] project meeting (from: Dec 02 2019 14:00:00 to: Dec 02 2019 16:00:00)
 ```
 
 ## Test 4: Saving to disk does not change the console UI
@@ -71,8 +75,8 @@ Aim: Verify that automatically saving the task list after every change (add, mar
 Input:
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06 0000
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 mark 1
 delete 2
 list
@@ -87,11 +91,11 @@ Now you have 1 task in the list.
 Nice! I've marked this task as done:
 [T][X] read book
 Noted. I've removed this task:
-[D][ ] return book (by: June 6th)
+[D][ ] return book (by: Jun 06 2019 00:00:00)
 Now you have 2 tasks in the list.
 Here are the tasks in your list:
 1. [T][X] read book
-2. [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+2. [E][ ] project meeting (from: Aug 06 2019 14:00:00 to: Aug 06 2019 16:00:00)
 ```
 
 ## Test 5: Start with no save file
@@ -125,10 +129,10 @@ Input:
 todo
 todo    
 deadline return book
-deadline /by Sunday
+deadline /by 2019-12-02 1800
 deadline return book /by
 event project meeting
-event project meeting /from Mon 2pm
+event project meeting /from 2019-12-02 1400
 list
 bye
 ```
@@ -232,15 +236,15 @@ Setup: put this in `data/gatsby.txt`, then start Gatsby and enter `list`.
 
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
-E | 0 | project meeting | Aug 6th 2pm | 4pm
+D | 0 | return book | 2019-06-06T00:00
+E | 0 | project meeting | 2019-08-06T14:00 | 2019-08-06T16:00
 ```
 
 Expected output:
 ```text
 1. [T][X] read book
-2. [D][ ] return book (by: June 6th)
-3. [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+2. [D][ ] return book (by: Jun 06 2019 00:00:00)
+3. [E][ ] project meeting (from: Aug 06 2019 14:00:00 to: Aug 06 2019 16:00:00)
 ```
 
 ### Manual check B: Skip a corrupted line
@@ -252,14 +256,14 @@ Setup: put this in `data/gatsby.txt`, then start Gatsby and enter `list`.
 ```text
 T | 1 | read book
 X | this line is broken
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06T00:00
 ```
 
 Expected output:
 ```text
 OOPS! I skipped a line I couldn't read in my save file: X | this line is broken
 1. [T][X] read book
-2. [D][ ] return book (by: June 6th)
+2. [D][ ] return book (by: Jun 06 2019 00:00:00)
 ```
 
 ### Manual check C: Blank input
