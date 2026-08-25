@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +21,7 @@ public class Gatsby {
     private static final String FIELD_SEPARATOR = "|";
 
     /** Tasks are loaded from the save file so the list survives between runs. */
-    private static ArrayList<Task> tasks = Storage.load();
+    private static TaskList tasks = new TaskList(Storage.load());
 
     /**
      * Starts Gatsby and processes commands entered through standard input.
@@ -124,7 +123,7 @@ public class Gatsby {
         } else {
             task.markUndone();
         }
-        Storage.save(tasks);
+        Storage.save(tasks.asList());
 
         if (wasAlreadyInState) {
             System.out.println(isMarking
@@ -174,7 +173,7 @@ public class Gatsby {
         }
 
         tasks.add(newTask);
-        Storage.save(tasks);
+        Storage.save(tasks.asList());
         System.out.println(" Got it. I've added this task:");
         System.out.println("  " + newTask);
         printTaskCount();
@@ -191,7 +190,7 @@ public class Gatsby {
             throw new EmptyPayloadException(" OOPS! How do I even delete nothing??");
         }
         Task removed = tasks.remove(parseTaskIndex(payload));
-        Storage.save(tasks);
+        Storage.save(tasks.asList());
         System.out.println(" Noted. I've removed this task:");
         System.out.println("  " + removed);
         printTaskCount();
