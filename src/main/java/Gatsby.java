@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -10,10 +9,6 @@ import java.time.format.DateTimeFormatter;
  * reported as a friendly message; the chatbot keeps running.
  */
 public class Gatsby {
-    private static final String LINE = "____________________________________________________________";
-    private static final String GOODBYE_MESSAGE = " Bye. Hope to see you again soon!";
-    private static final String START_JOKE = "When did the Japanese invent eggs? A long tamago :)";
-
     /**
      * The vertical bar separates fields in the save file, so it cannot appear
      * inside a description or a date without making the saved line ambiguous.
@@ -23,32 +18,26 @@ public class Gatsby {
     /** Tasks are loaded from the save file so the list survives between runs. */
     private static TaskList tasks = new TaskList(Storage.load());
 
+    /** Handles Gatsby's console input and output. */
+    private static final Ui ui = new Ui();
+
     /**
      * Starts Gatsby and processes commands entered through standard input.
      *
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        String banner = "************************************\n"
-                + "*              Gatsby              *\n"
-                + "************************************\n";
-        System.out.println(banner);
-        String welcome = "Wassup! I'm Gatsby.\n"
-                + START_JOKE + "\n"
-                + "What can I do for you?\n";
-        System.out.print(welcome);
-
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            System.out.println(LINE);
-            String input = scanner.nextLine();
-            System.out.println(LINE);
+        ui.showWelcome();
+        while (ui.hasNextLine()) {
+            ui.showSeparator();
+            String input = ui.readLine();
+            ui.showSeparator();
 
             if (handleInput(input)) {
                 break;
             }
         }
-        scanner.close();
+        ui.close();
     }
 
     /**
@@ -65,7 +54,7 @@ public class Gatsby {
         try {
             String trimmedInput = input.strip();
             if (trimmedInput.isEmpty()) {
-                System.out.println(" You didn't type anything! Try \"todo read book\" or \"list\".");
+                ui.printLine(" You didn't type anything! Try \"todo read book\" or \"list\".");
                 return false;
             }
 
@@ -74,7 +63,7 @@ public class Gatsby {
             Command commandType = Command.fromInput(trimmedInput);
 
             if (commandType == Command.BYE) {
-                System.out.println(GOODBYE_MESSAGE);
+                ui.printLine(" Bye. Hope to see you again soon!");
                 return true;
             } else if (commandType == Command.LIST) {
                 printList();
@@ -91,11 +80,11 @@ public class Gatsby {
                         + " I know: todo, deadline, event, list, mark, unmark, delete, bye.");
             }
         } catch (GatsbyException e) {
-            System.out.println(e.getMessage());
+            ui.printLine(e.getMessage());
         } catch (RuntimeException e) {
-            System.out.println(" Yikes, something unexpected went wrong: " + e);
+            ui.printLine(" Yikes, something unexpected went wrong: " + e);
         } finally {
-            System.out.println(LINE);
+            ui.showSeparator();
         }
         return false;
     }
@@ -126,15 +115,15 @@ public class Gatsby {
         Storage.save(tasks.asList());
 
         if (wasAlreadyInState) {
-            System.out.println(isMarking
+            ui.printLine(isMarking
                     ? " That one was already done, but sure:"
                     : " That one wasn't done yet, but sure:");
         } else {
-            System.out.println(isMarking
+            ui.printLine(isMarking
                     ? " Nice! I've marked this task as done:"
                     : " OK, I've marked this task as not done yet:");
         }
-        System.out.println("  " + task);
+        ui.printLine("  " + task);
     }
 
     /**
@@ -174,8 +163,8 @@ public class Gatsby {
 
         tasks.add(newTask);
         Storage.save(tasks.asList());
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("  " + newTask);
+        ui.printLine(" Got it. I've added this task:");
+        ui.printLine("  " + newTask);
         printTaskCount();
     }
 
@@ -191,8 +180,8 @@ public class Gatsby {
         }
         Task removed = tasks.remove(parseTaskIndex(payload));
         Storage.save(tasks.asList());
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("  " + removed);
+        ui.printLine(" Noted. I've removed this task:");
+        ui.printLine("  " + removed);
         printTaskCount();
     }
 
@@ -265,7 +254,7 @@ public class Gatsby {
 
     /** Prints how many tasks are in the list, using correct singular/plural wording. */
     private static void printTaskCount() {
-        System.out.println(" Now you have " + tasks.size()
+        ui.printLine(" Now you have " + tasks.size()
                 + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
     }
 
@@ -273,13 +262,13 @@ public class Gatsby {
      * Prints the latest snapshot of the task list at the time of this method call.
      */
     private static void printList() {
-        System.out.println(" Here are the tasks in your list:");
+        ui.printLine(" Here are the tasks in your list:");
         if (tasks.isEmpty()) {
-            System.out.println(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");
+            ui.printLine(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");
             return;
         }
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + ". " + tasks.get(i));
+            ui.printLine(" " + (i + 1) + ". " + tasks.get(i));
         }
     }
 }
