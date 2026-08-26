@@ -1,3 +1,5 @@
+package gatsby.ui;
+
 import java.util.Scanner;
 
 /**

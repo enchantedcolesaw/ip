@@ -1,3 +1,22 @@
+package gatsby;
+
+import gatsby.command.Command;
+import gatsby.command.CommandType;
+import gatsby.command.DeadlineCommand;
+import gatsby.command.DeleteCommand;
+import gatsby.command.EventCommand;
+import gatsby.command.ExitCommand;
+import gatsby.command.ListCommand;
+import gatsby.command.MarkCommand;
+import gatsby.command.TodoCommand;
+import gatsby.command.UnmarkCommand;
+import gatsby.exception.GatsbyException;
+import gatsby.exception.UnknownCommandException;
+import gatsby.model.TaskList;
+import gatsby.parser.Parser;
+import gatsby.storage.Storage;
+import gatsby.ui.Ui;
+
 /**
  * A simple command-line chatbot that stores tasks and remembers them between runs.
  *

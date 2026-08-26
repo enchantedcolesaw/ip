@@ -1,3 +1,5 @@
+package gatsby.command;
+
 import java.util.Set;
 
 /**
@@ -29,7 +31,7 @@ public enum CommandType {
      * @param input a lowercase command word or whole-line alias
      * @return true when this command has the supplied alias
      */
-    boolean matchesAlias(String input) {
+    public boolean matchesAlias(String input) {
         return aliases.contains(input);
     }
 }

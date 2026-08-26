@@ -1,3 +1,5 @@
+package gatsby.exception;
+
 /**
  * Signals that a mark or unmark command was given without a task number.
  */

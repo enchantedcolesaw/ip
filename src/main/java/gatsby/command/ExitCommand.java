@@ -1,3 +1,9 @@
+package gatsby.command;
+
+import gatsby.model.TaskList;
+import gatsby.storage.Storage;
+import gatsby.ui.Ui;
+
 /**
  * Ends the current Gatsby session after displaying the goodbye message.
  */
