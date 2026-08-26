@@ -1,19 +1,30 @@
 package gatsby.model;
 
+/** Represents a task that can be marked as done or left unfinished. */
 public class Task {
-    private String taskName;
+    /** The task description. */
+    private final String description;
+
+    /** Whether this task has been marked as done. */
     private boolean isDone;
 
-    public Task(String taskName) {
-        this.taskName = taskName;
+    /**
+     * Creates an unfinished task.
+     *
+     * @param description the task description
+     */
+    public Task(String description) {
+        this.description = description;
         this.isDone = false;
     }
 
-    public void markDone(){
+    /** Marks this task as done. */
+    public void markDone() {
         this.isDone = true;
     }
 
-    public void markUndone(){
+    /** Marks this task as unfinished. */
+    public void markUndone() {
         this.isDone = false;
     }
 
@@ -22,7 +33,7 @@ public class Task {
      *
      * @return true when the task is done
      */
-    public boolean isDone(){
+    public boolean isDone() {
         return this.isDone;
     }
 
@@ -31,8 +42,8 @@ public class Task {
      *
      * @return the description of this task
      */
-    public String getTaskName(){
-        return this.taskName;
+    public String getTaskName() {
+        return this.description;
     }
 
     /**
@@ -40,7 +51,7 @@ public class Task {
      *
      * @return "1" when the task is done, "0" otherwise
      */
-    public String getStatusFlag(){
+    public String getStatusFlag() {
         return this.isDone ? "1" : "0";
     }
 
@@ -50,16 +61,21 @@ public class Task {
      *
      * @return the encoded form of this task
      */
-    public String toFileFormat(){
-        return getStatusFlag() + " | " + this.taskName;
+    public String toFileFormat() {
+        return getStatusFlag() + " | " + this.description;
     }
 
+    /**
+     * Returns this task in the format shown to Gatsby users.
+     *
+     * @return the formatted task
+     */
     @Override
-    public String toString(){
-        if (this.isDone){
-            return "[X] " + this.taskName;
-        } else{
-            return "[ ] " + this.taskName;
+    public String toString() {
+        if (this.isDone) {
+            return "[X] " + this.description;
+        } else {
+            return "[ ] " + this.description;
         }
     }
 }
