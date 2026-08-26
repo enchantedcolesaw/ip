@@ -1,3 +1,7 @@
+package gatsby.model;
+
+import gatsby.storage.Storage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

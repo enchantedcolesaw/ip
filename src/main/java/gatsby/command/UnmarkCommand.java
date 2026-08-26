@@ -1,21 +1,28 @@
+package gatsby.command;
+
+import gatsby.exception.GatsbyException;
+import gatsby.model.TaskList;
+import gatsby.storage.Storage;
+import gatsby.ui.Ui;
+
 /**
- * Marks one selected task as done.
+ * Marks one selected task as not done.
  */
-public class MarkCommand extends Command {
-    /** The task number entered after the {@code mark} command. */
+public class UnmarkCommand extends Command {
+    /** The task number entered after the {@code unmark} command. */
     private final String payload;
 
     /**
      * Creates a command for the supplied task number.
      *
-     * @param payload the text entered after {@code mark}
+     * @param payload the text entered after {@code unmark}
      */
-    public MarkCommand(String payload) {
+    public UnmarkCommand(String payload) {
         this.payload = payload;
     }
 
     /**
-     * Marks the selected task and displays the result.
+     * Unmarks the selected task and displays the result.
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
@@ -24,6 +31,6 @@ public class MarkCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
-        updateTaskStatus(tasks, ui, payload, true);
+        updateTaskStatus(tasks, ui, payload, false);
     }
 }

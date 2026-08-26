@@ -1,3 +1,5 @@
+package gatsby.model;
+
 public class Todo extends Task {
 
     public Todo(String description){

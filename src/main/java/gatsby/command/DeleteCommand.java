@@ -1,3 +1,12 @@
+package gatsby.command;
+
+import gatsby.exception.EmptyPayloadException;
+import gatsby.exception.GatsbyException;
+import gatsby.model.Task;
+import gatsby.model.TaskList;
+import gatsby.storage.Storage;
+import gatsby.ui.Ui;
+
 /**
  * Removes one selected task from the list.
  */

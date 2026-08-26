@@ -1,3 +1,12 @@
+package gatsby.command;
+
+import gatsby.exception.GatsbyException;
+import gatsby.model.Task;
+import gatsby.model.TaskList;
+import gatsby.model.Todo;
+import gatsby.storage.Storage;
+import gatsby.ui.Ui;
+
 /**
  * Creates and saves a plain todo task.
  */

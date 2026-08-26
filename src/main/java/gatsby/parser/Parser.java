@@ -1,3 +1,7 @@
+package gatsby.parser;
+
+import gatsby.command.CommandType;
+
 import java.util.Locale;
 
 /**

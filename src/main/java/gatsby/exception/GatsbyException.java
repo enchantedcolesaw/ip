@@ -1,3 +1,5 @@
+package gatsby.exception;
+
 /**
  * Base class for every error Gatsby expects and can explain to the user.
  *

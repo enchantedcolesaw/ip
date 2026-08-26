@@ -119,7 +119,8 @@ def main() -> int:
         )
         return 1
 
-    sources = sorted((ROOT / "src" / "main" / "java").glob("*.java"))
+    # Packages place source files in subdirectories below the source root.
+    sources = sorted((ROOT / "src" / "main" / "java").rglob("*.java"))
     if not sources:
         print("ERROR: No Java source files found", file=sys.stderr)
         return 1
@@ -146,7 +147,7 @@ def main() -> int:
                 shutil.rmtree(data_dir)
             try:
                 run_result = subprocess.run(
-                    ["java", "-cp", str(classes), "Gatsby"],
+                    ["java", "-cp", str(classes), "gatsby.Gatsby"],
                     cwd=ROOT,
                     input=case.input_text,
                     capture_output=True,
