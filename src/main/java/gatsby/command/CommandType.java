@@ -9,18 +9,33 @@ import java.util.Set;
  * parser can identify a command before Gatsby chooses its implementation.
  */
 public enum CommandType {
+    /** The command that ends the current Gatsby session. */
     BYE("bye", "byebye", "bye bye"),
+    /** The command that displays the current task list. */
     LIST("list"),
+    /** The command that marks a task as done. */
     MARK("mark"),
+    /** The command that marks a task as not done. */
     UNMARK("unmark"),
+    /** The command that creates a plain todo. */
     TODO("todo"),
+    /** The command that creates a deadline. */
     DEADLINE("deadline"),
+    /** The command that creates an event. */
     EVENT("event"),
+    /** The command that removes a task. */
     DELETE("delete"),
+    /** A marker used when the parser cannot identify the command. */
     UNKNOWN();
 
+    /** The lowercase words that can invoke this command type. */
     private final Set<String> aliases;
 
+    /**
+     * Creates a command type with its accepted aliases.
+     *
+     * @param aliases the words recognized as this command
+     */
     CommandType(String... aliases) {
         this.aliases = Set.of(aliases);
     }

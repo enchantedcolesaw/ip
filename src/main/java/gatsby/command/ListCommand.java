@@ -8,6 +8,10 @@ import gatsby.ui.Ui;
  * Displays every task currently held by Gatsby.
  */
 public class ListCommand extends Command {
+    /** Creates the command that displays the current task list. */
+    public ListCommand() {
+    }
+
     /**
      * Prints the task list, including the empty-list message when appropriate.
      *

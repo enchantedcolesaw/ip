@@ -1,19 +1,30 @@
 package gatsby.model;
 
+/** The common description and completion state shared by every task type. */
 public class Task {
+    /** The text describing the task. */
     private String taskName;
+
+    /** Whether the task has been marked as complete. */
     private boolean isDone;
 
+    /**
+     * Creates an unfinished task with the supplied description.
+     *
+     * @param taskName the task description
+     */
     public Task(String taskName) {
         this.taskName = taskName;
         this.isDone = false;
     }
 
-    public void markDone(){
+    /** Marks this task as complete. */
+    public void markDone() {
         this.isDone = true;
     }
 
-    public void markUndone(){
+    /** Marks this task as incomplete. */
+    public void markUndone() {
         this.isDone = false;
     }
 
@@ -22,7 +33,7 @@ public class Task {
      *
      * @return true when the task is done
      */
-    public boolean isDone(){
+    public boolean isDone() {
         return this.isDone;
     }
 
@@ -31,7 +42,7 @@ public class Task {
      *
      * @return the description of this task
      */
-    public String getTaskName(){
+    public String getTaskName() {
         return this.taskName;
     }
 
@@ -40,7 +51,7 @@ public class Task {
      *
      * @return "1" when the task is done, "0" otherwise
      */
-    public String getStatusFlag(){
+    public String getStatusFlag() {
         return this.isDone ? "1" : "0";
     }
 
@@ -55,7 +66,7 @@ public class Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         if (this.isDone){
             return "[X] " + this.taskName;
         } else{

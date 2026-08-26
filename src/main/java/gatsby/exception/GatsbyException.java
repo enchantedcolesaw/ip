@@ -8,6 +8,11 @@ package gatsby.exception;
  * catch block per exception type.
  */
 public class GatsbyException extends Exception {
+    /**
+     * Creates an expected Gatsby error with a user-facing explanation.
+     *
+     * @param message the explanation shown by Gatsby
+     */
     public GatsbyException(String message) {
         super(message);
     }

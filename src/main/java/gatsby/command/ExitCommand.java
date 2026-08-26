@@ -8,6 +8,10 @@ import gatsby.ui.Ui;
  * Ends the current Gatsby session after displaying the goodbye message.
  */
 public class ExitCommand extends Command {
+    /** Creates the command that ends the Gatsby session. */
+    public ExitCommand() {
+    }
+
     /**
      * Displays the goodbye message. The collaborators are unused for this
      * command, but are accepted to keep the common command protocol uniform.

@@ -11,6 +11,10 @@ import java.util.Locale;
  * original content so descriptions and dates are handled exactly as entered.
  */
 public class Parser {
+    /** Creates a parser for Gatsby command lines. */
+    public Parser() {
+    }
+
     /**
      * Parses one line of user input.
      *
