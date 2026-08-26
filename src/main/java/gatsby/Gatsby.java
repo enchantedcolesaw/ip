@@ -1,15 +1,6 @@
 package gatsby;
 
-import gatsby.command.Command;
-import gatsby.command.CommandType;
-import gatsby.command.DeadlineCommand;
-import gatsby.command.DeleteCommand;
-import gatsby.command.EventCommand;
-import gatsby.command.ExitCommand;
-import gatsby.command.ListCommand;
-import gatsby.command.MarkCommand;
-import gatsby.command.TodoCommand;
-import gatsby.command.UnmarkCommand;
+import gatsby.command.*;
 import gatsby.exception.GatsbyException;
 import gatsby.exception.UnknownCommandException;
 import gatsby.model.TaskList;
@@ -94,11 +85,13 @@ public class Gatsby {
                 command.execute(tasks, ui, null);
             } else if (commandType == CommandType.TODO
                     || commandType == CommandType.DEADLINE
-                    || commandType == CommandType.EVENT) {
+                    || commandType == CommandType.EVENT
+                    || commandType == CommandType.FIND) {
                 Command command = switch (commandType) {
                     case TODO -> new TodoCommand(payload);
                     case DEADLINE -> new DeadlineCommand(payload);
                     case EVENT -> new EventCommand(payload);
+                    case FIND -> new FindCommand(payload);
                     default -> throw new UnknownCommandException(" I don't recognise this command :'((");
                 };
                 command.execute(tasks, ui, null);
@@ -107,7 +100,7 @@ public class Gatsby {
                 command.execute(tasks, ui, null);
             } else {
                 throw new UnknownCommandException(" Wait I don't recognise that yet :(\n"
-                        + " I know: todo, deadline, event, list, mark, unmark, delete, bye.");
+                        + " I know: todo, deadline, event, list, find, mark, unmark, delete, bye.");
             }
         } catch (GatsbyException e) {
             ui.printLine(e.getMessage());

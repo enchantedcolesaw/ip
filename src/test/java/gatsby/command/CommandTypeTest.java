@@ -20,6 +20,7 @@ class CommandTypeTest {
         assertTrue(CommandType.MARK.matchesAlias("mark"));
         assertTrue(CommandType.UNMARK.matchesAlias("unmark"));
         assertTrue(CommandType.DELETE.matchesAlias("delete"));
+        assertTrue(CommandType.FIND.matchesAlias("find"));
     }
 
     /** Verifies that aliases are exact and do not accept unknown words. */

@@ -25,6 +25,8 @@ public enum CommandType {
     EVENT("event"),
     /** The command that removes a task. */
     DELETE("delete"),
+    /** The command that searches for tasks that contain a keyword. */
+    FIND("find"),
     /** A marker used when the parser cannot identify the command. */
     UNKNOWN();
 
