@@ -1,9 +1,9 @@
 package gatsby.model;
 
-/** The common description and completion state shared by every task type. */
+/** Represents a task that can be marked as done or left unfinished. */
 public class Task {
     /** The text describing the task. */
-    private String taskName;
+    private final String description;
 
     /** Whether the task has been marked as complete. */
     private boolean isDone;
@@ -11,10 +11,10 @@ public class Task {
     /**
      * Creates an unfinished task with the supplied description.
      *
-     * @param taskName the task description
+     * @param description the task description
      */
-    public Task(String taskName) {
-        this.taskName = taskName;
+    public Task(String description) {
+        this.description = description;
         this.isDone = false;
     }
 
@@ -43,7 +43,7 @@ public class Task {
      * @return the description of this task
      */
     public String getTaskName() {
-        return this.taskName;
+        return this.description;
     }
 
     /**
@@ -61,16 +61,21 @@ public class Task {
      *
      * @return the encoded form of this task
      */
-    public String toFileFormat(){
-        return getStatusFlag() + " | " + this.taskName;
+    public String toFileFormat() {
+        return getStatusFlag() + " | " + this.description;
     }
 
+    /**
+     * Returns this task in the format shown to Gatsby users.
+     *
+     * @return the formatted task
+     */
     @Override
     public String toString() {
-        if (this.isDone){
-            return "[X] " + this.taskName;
-        } else{
-            return "[ ] " + this.taskName;
+        if (this.isDone) {
+            return "[X] " + this.description;
+        } else {
+            return "[ ] " + this.description;
         }
     }
 }

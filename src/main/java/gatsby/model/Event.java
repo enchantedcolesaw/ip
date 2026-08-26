@@ -6,22 +6,22 @@ import java.time.format.DateTimeFormatter;
 /** A task that takes place during a specified date-time range. */
 public class Event extends Task {
     /** The date and time at which the event starts. */
-    private LocalDateTime from;
+    private final LocalDateTime start;
 
     /** The date and time at which the event ends. */
-    private LocalDateTime to;
+    private final LocalDateTime end;
 
     /**
      * Creates an event task.
      *
      * @param description the task description
-     * @param from the event start date and time
-     * @param to the event end date and time
+     * @param start the event start date and time
+     * @param end the event end date and time
      */
-    public Event(String description, LocalDateTime from, LocalDateTime to) {
+    public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
-        this.from = from;
-        this.to = to;
+        this.start = start;
+        this.end = end;
     }
 
     /**
@@ -32,8 +32,8 @@ public class Event extends Task {
     @Override
     public String toString() {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss");
-        String formattedStart = this.from.format(outputFormatter);
-        String formattedEnd = this.to.format(outputFormatter);
+        String formattedStart = this.start.format(outputFormatter);
+        String formattedEnd = this.end.format(outputFormatter);
         return "[E]" + super.toString() + " (from: " + formattedStart + " to: " + formattedEnd + ")";
     }
 
@@ -44,6 +44,6 @@ public class Event extends Task {
      */
     @Override
     public String toFileFormat() {
-        return "E | " + super.toFileFormat() + " | " + this.from + " | " + this.to;
+        return "E | " + super.toFileFormat() + " | " + this.start + " | " + this.end;
     }
 }
