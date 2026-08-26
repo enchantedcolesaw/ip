@@ -24,6 +24,15 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## JUnit coverage target
+
+Prioritize JUnit tests for approximately the top 50% of the codebase's
+highest-value methods, especially complex, core, or business-critical logic.
+When production code changes, update the relevant JUnit tests in the same
+change whenever the behavior or coverage is affected. This keeps the tests
+aligned with the implementation and maintains the 50% high-value coverage
+target.
+
 ## After every code update:
 
 1. Review whether the change affects the console UI, and update `test/ui-test-plan.md` with or revise the relevant test case when needed.
