@@ -41,6 +41,8 @@ class ParserTest {
         assertEquals(CommandType.DEADLINE, parser.parse("deadline return book").getCommand());
         assertEquals(CommandType.EVENT, parser.parse("event project meeting").getCommand());
         assertEquals(CommandType.DELETE, parser.parse("delete 1").getCommand());
+        assertEquals(CommandType.FIND, parser.parse("find book").getCommand());
+        assertEquals("book", parser.parse("find book").getPayload());
     }
 
     /** Verifies that whole-line commands are recognized without a payload. */

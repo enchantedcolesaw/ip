@@ -200,7 +200,7 @@ bye
 Expected output:
 ```text
 Wait I don't recognise that yet :(
-I know: todo, deadline, event, list, mark, unmark, delete, bye.
+I know: todo, deadline, event, list, find, mark, unmark, delete, bye.
 Nice! I've marked this task as done:
 That one was already done, but sure:
 OK, I've marked this task as not done yet:
@@ -222,6 +222,32 @@ Expected output:
 ```text
 OOPS! Please leave out the "|" character; I use it to separate fields in my save file.
 There's nothing here yet! Go ahead and add any tasks you'd like! :)
+```
+
+## Test 10: Find tasks by description keyword
+
+Aim: Verify that `find` lists matching tasks across task types, searches only descriptions, reports no matches, and rejects an empty keyword.
+
+Input:
+```text
+todo read book
+deadline return report /by 2019-12-02 1800
+event book club /from 2019-12-03 1400 /to 2019-12-03 1600
+find book
+find 2019
+find missing
+find
+bye
+```
+
+Expected output:
+```text
+Here are the matching tasks in your list:
+1. [T][ ] read book
+2. [E][ ] book club (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
+No matching tasks found :(
+No matching tasks found :(
+OOPS! How do I even find nothing??
 ```
 
 # Manual checks
