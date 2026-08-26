@@ -9,7 +9,10 @@ import java.util.Scanner;
  * what Gatsby should do, while this class focuses on how Gatsby communicates it.
  */
 public class Ui {
+    /** The separator printed around each console interaction. */
     private static final String LINE = "____________________________________________________________";
+
+    /** The joke included in Gatsby's welcome message. */
     private static final String START_JOKE = "When did the Japanese invent eggs? A long tamago :)";
 
     /** Reads commands from standard input for the current Gatsby session. */

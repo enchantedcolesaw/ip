@@ -19,6 +19,10 @@ public abstract class Command {
     /** The character reserved for separating fields in the save file. */
     private static final String FIELD_SEPARATOR = "|";
 
+    /** Creates a command. */
+    public Command() {
+    }
+
     /**
      * Performs this command using Gatsby's collaborators.
      *

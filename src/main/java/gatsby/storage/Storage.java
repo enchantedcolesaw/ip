@@ -29,13 +29,20 @@ import java.util.Scanner;
  * chatbot keeps working with whatever could be recovered.
  */
 public class Storage {
+    /** The directory containing Gatsby's save file. */
     private static final String DATA_DIRECTORY = "data";
+
+    /** The path of Gatsby's save file relative to the project root. */
     private static final String DATA_FILE = "data/gatsby.txt";
 
     /** Field counts a valid saved line must have, per task type. */
     private static final int TODO_FIELDS = 3;
     private static final int DEADLINE_FIELDS = 4;
     private static final int EVENT_FIELDS = 5;
+
+    /** Creates a storage helper. */
+    public Storage() {
+    }
 
     /**
      * Writes the whole task list to disk, overwriting any previous contents.

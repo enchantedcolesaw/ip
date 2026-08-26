@@ -34,6 +34,10 @@ public class Gatsby {
     /** Converts raw input lines into commands and payloads. */
     private static final Parser parser = new Parser();
 
+    /** Creates a Gatsby application instance. */
+    public Gatsby() {
+    }
+
     /**
      * Starts Gatsby and processes commands entered through standard input.
      *
