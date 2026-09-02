@@ -1,8 +1,8 @@
 package gatsby.model;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 /** Tests the Todo-specific display and save-file representations. */
 class TodoTest {

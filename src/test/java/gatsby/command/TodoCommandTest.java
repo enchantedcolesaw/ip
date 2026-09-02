@@ -1,14 +1,15 @@
 package gatsby.command;
 
-import gatsby.exception.EmptyPayloadException;
-import gatsby.model.TaskList;
-import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import gatsby.exception.EmptyPayloadException;
+import gatsby.model.TaskList;
+import gatsby.testutil.RecordingUi;
 
 /** Tests todo creation and payload validation. */
 class TodoCommandTest extends AbstractCommandTest {
@@ -32,8 +33,8 @@ class TodoCommandTest extends AbstractCommandTest {
     void execute_emptyDescription_throwsException() {
         TaskList tasks = new TaskList();
 
-        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class,
-                () -> new TodoCommand("  ").execute(tasks, recordingUi(), null));
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new TodoCommand("  ").execute(tasks, recordingUi(), null));
 
         assertEquals(" son the description of a todo cannot be empty -_-!", exception.getMessage());
         assertEquals(0, tasks.size());
@@ -42,8 +43,8 @@ class TodoCommandTest extends AbstractCommandTest {
     /** Verifies that descriptions cannot corrupt the save-file field structure. */
     @Test
     void execute_descriptionContainsSeparator_throwsException() {
-        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class,
-                () -> new TodoCommand("read | book").execute(new TaskList(), recordingUi(), null));
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new TodoCommand("read | book").execute(new TaskList(), recordingUi(), null));
 
         assertEquals(" OOPS! Please leave out the \"|\" character; I use it to separate fields in my save file.",
                 exception.getMessage());

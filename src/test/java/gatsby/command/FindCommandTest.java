@@ -1,18 +1,19 @@
 package gatsby.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import gatsby.exception.EmptyPayloadException;
 import gatsby.model.Deadline;
 import gatsby.model.Event;
 import gatsby.model.TaskList;
 import gatsby.model.Todo;
 import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Tests searching task descriptions and reporting the matching results. */
 class FindCommandTest extends AbstractCommandTest {
@@ -52,8 +53,8 @@ class FindCommandTest extends AbstractCommandTest {
     void execute_emptyKeyword_throwsException() {
         RecordingUi ui = recordingUi();
 
-        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class,
-                () -> new FindCommand("").execute(new TaskList(), ui, null));
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new FindCommand("").execute(new TaskList(), ui, null));
 
         assertEquals("OOPS! How do I even find nothing??", exception.getMessage());
         assertEquals(List.of(), ui.messages());
