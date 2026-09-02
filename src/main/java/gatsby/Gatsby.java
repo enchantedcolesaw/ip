@@ -1,5 +1,8 @@
 package gatsby;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gatsby.command.Command;
 import gatsby.command.CommandType;
 import gatsby.command.DeadlineCommand;
@@ -27,16 +30,15 @@ import gatsby.ui.Ui;
  */
 public class Gatsby {
     /** Tasks are loaded from the save file so the list survives between runs. */
-    private static TaskList tasks = new TaskList(Storage.load());
-
-    /** Handles Gatsby's console input and output. */
-    private static final Ui ui = new Ui();
+    private final TaskList tasks;
 
     /** Converts raw input lines into commands and payloads. */
-    private static final Parser parser = new Parser();
+    private final Parser parser;
 
     /** Creates a Gatsby application instance. */
     public Gatsby() {
+        tasks = new TaskList(Storage.load());
+        parser = new Parser();
     }
 
     /**
@@ -45,13 +47,15 @@ public class Gatsby {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
+        Gatsby gatsby = new Gatsby();
+        Ui ui = new Ui();
         ui.showWelcome();
         while (ui.hasNextLine()) {
             ui.showSeparator();
             String input = ui.readLine();
             ui.showSeparator();
 
-            if (handleInput(input)) {
+            if (gatsby.handleInput(input, ui, true)) {
                 break;
             }
         }
@@ -68,7 +72,7 @@ public class Gatsby {
      * @param input the raw line the user typed
      * @return true when the user asked to quit, false to keep going
      */
-    private static boolean handleInput(String input) {
+    private boolean handleInput(String input, Ui ui, boolean showSeparators) {
         try {
             String trimmedInput = input.strip();
             if (trimmedInput.isEmpty()) {
@@ -117,9 +121,35 @@ public class Gatsby {
         } catch (RuntimeException e) {
             ui.printLine(" Yikes, something unexpected went wrong: " + e);
         } finally {
-            ui.showSeparator();
+            if (showSeparators) {
+                ui.showSeparator();
+            }
         }
         return false;
+    }
+
+    /**
+     * Processes one command and returns the user-facing response.
+     *
+     * @param input the command entered by the user
+     * @return Gatsby's response, without console separators
+     */
+    public String getResponse(String input) {
+        List<String> messages = new ArrayList<>();
+        Ui responseUi = new Ui(messages::add);
+        handleInput(input, responseUi, false);
+        responseUi.close();
+        return String.join(System.lineSeparator(), messages);
+    }
+
+    /**
+     * Checks whether an input line asks Gatsby to end the session.
+     *
+     * @param input the command entered by the user
+     * @return true when the input is one of Gatsby's goodbye aliases
+     */
+    public boolean isExitCommand(String input) {
+        return parser.parse(input).getCommand() == CommandType.BYE;
     }
 
 }

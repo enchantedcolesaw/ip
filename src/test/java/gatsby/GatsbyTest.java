@@ -46,4 +46,17 @@ class GatsbyTest {
         assertTrue(printed.contains("[T][ ] read book"));
         assertTrue(printed.contains("Bye. Hope to see you again soon!"));
     }
+
+    /** Verifies that the GUI-facing response path uses the same command behavior. */
+    @Test
+    void getResponse_todoThenList_returnsUserFacingMessages() {
+        Gatsby gatsby = new Gatsby();
+
+        String addResponse = gatsby.getResponse("todo read book");
+        String listResponse = gatsby.getResponse("list");
+
+        assertTrue(addResponse.contains("Got it. I've added this task:"));
+        assertTrue(addResponse.contains("[T][ ] read book"));
+        assertTrue(listResponse.contains("1. [T][ ] read book"));
+    }
 }

@@ -20,4 +20,17 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ************************************
    ```
 
+## Using the JavaFX GUI
+
+Gatsby also includes a JavaFX GUI based on the SE-EDUCATION JavaFX tutorial parts 1–4.
+Use JDK 25 with JavaFX support, then run:
+
+```bash
+./gradlew run
+```
+
+Type any existing Gatsby command into the text field and press Enter or click Send. The
+console and GUI use the same command-processing and save-file logic, so tasks added in one
+interface are available in the other.
+
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
