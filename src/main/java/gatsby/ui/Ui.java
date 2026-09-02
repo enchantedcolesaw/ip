@@ -43,6 +43,13 @@ public class Ui {
         this(new Scanner(InputStream.nullInputStream()), lineOutput, lineOutput);
     }
 
+    /** Creates a UI with explicit input and output collaborators. */
+    private Ui(Scanner scanner, Consumer<String> lineOutput, Consumer<String> output) {
+        this.scanner = scanner;
+        this.lineOutput = lineOutput;
+        this.output = output;
+    }
+
     /**
      * Returns the joke included in Gatsby's welcome message.
      *
@@ -50,13 +57,6 @@ public class Ui {
      */
     public static String getStartingJoke() {
         return START_JOKE;
-    }
-
-    /** Creates a UI with explicit input and output collaborators. */
-    private Ui(Scanner scanner, Consumer<String> lineOutput, Consumer<String> output) {
-        this.scanner = scanner;
-        this.lineOutput = lineOutput;
-        this.output = output;
     }
 
     /** Prints Gatsby's banner and welcome message. */

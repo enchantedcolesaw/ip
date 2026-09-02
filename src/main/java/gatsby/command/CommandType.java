@@ -27,6 +27,8 @@ public enum CommandType {
     DELETE("delete"),
     /** The command that searches for tasks that contain a keyword. */
     FIND("find"),
+    /** The command that displays Gatsby's available commands. */
+    HELP("help", "?"),
     /** A marker used when the parser cannot identify the command. */
     UNKNOWN();
 

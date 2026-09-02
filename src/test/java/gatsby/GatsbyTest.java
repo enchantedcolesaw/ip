@@ -59,4 +59,15 @@ class GatsbyTest {
         assertTrue(addResponse.contains("[T][ ] read book"));
         assertTrue(listResponse.contains("1. [T][ ] read book"));
     }
+
+    /** Verifies that the public response path supports both help aliases. */
+    @Test
+    void getResponse_helpAlias_returnsCommandReference() {
+        Gatsby gatsby = new Gatsby();
+
+        String helpResponse = gatsby.getResponse("?");
+
+        assertTrue(helpResponse.contains("Here are the commands I know:"));
+        assertTrue(helpResponse.contains("help or ? - show this help"));
+    }
 }
