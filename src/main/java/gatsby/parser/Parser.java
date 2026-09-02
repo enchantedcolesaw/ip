@@ -1,8 +1,8 @@
 package gatsby.parser;
 
-import gatsby.command.CommandType;
-
 import java.util.Locale;
+
+import gatsby.command.CommandType;
 
 /**
  * Converts a raw console line into a command and its payload.

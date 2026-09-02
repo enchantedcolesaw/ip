@@ -1,17 +1,18 @@
 package gatsby.command;
 
-import gatsby.exception.EmptyPayloadException;
-import gatsby.model.Event;
-import gatsby.model.TaskList;
-import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import gatsby.exception.EmptyPayloadException;
+import gatsby.model.Event;
+import gatsby.model.TaskList;
+import gatsby.testutil.RecordingUi;
 
 /** Tests event time-range parsing, creation, and validation. */
 class EventCommandTest extends AbstractCommandTest {
@@ -38,8 +39,8 @@ class EventCommandTest extends AbstractCommandTest {
     /** Verifies that an event without a start keyword is rejected. */
     @Test
     void execute_missingFromKeyword_throwsException() {
-        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class,
-                () -> new EventCommand("project meeting").execute(new TaskList(), recordingUi(), null));
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new EventCommand("project meeting").execute(new TaskList(), recordingUi(), null));
 
         assertEquals(" son there's no event name/timing for this event -_-!", exception.getMessage());
     }
@@ -47,8 +48,8 @@ class EventCommandTest extends AbstractCommandTest {
     /** Verifies that an event without an end keyword is rejected. */
     @Test
     void execute_missingToKeyword_throwsException() {
-        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class,
-                () -> new EventCommand("project meeting /from 2019-12-02 1400")
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new EventCommand("project meeting /from 2019-12-02 1400")
                         .execute(new TaskList(), recordingUi(), null));
 
         assertEquals(" son this event has no end time, it's infinite! -_-!", exception.getMessage());
@@ -57,8 +58,8 @@ class EventCommandTest extends AbstractCommandTest {
     /** Verifies that malformed event times are not silently accepted. */
     @Test
     void execute_invalidDate_throwsDateParseException() {
-        assertThrows(DateTimeParseException.class,
-                () -> new EventCommand("meeting /from today /to tomorrow")
+        assertThrows(DateTimeParseException.class, () ->
+                new EventCommand("meeting /from today /to tomorrow")
                         .execute(new TaskList(), recordingUi(), null));
     }
 }

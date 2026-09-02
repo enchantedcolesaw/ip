@@ -1,9 +1,9 @@
 package gatsby.testutil;
 
-import gatsby.ui.Ui;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import gatsby.ui.Ui;
 
 /** Captures command messages without depending on console output in a test. */
 public class RecordingUi extends Ui {

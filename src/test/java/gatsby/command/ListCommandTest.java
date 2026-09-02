@@ -1,13 +1,14 @@
 package gatsby.command;
 
-import gatsby.model.TaskList;
-import gatsby.model.Todo;
-import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import gatsby.model.TaskList;
+import gatsby.model.Todo;
+import gatsby.testutil.RecordingUi;
 
 /** Tests listing both empty and populated task lists. */
 class ListCommandTest extends AbstractCommandTest {

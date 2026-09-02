@@ -1,15 +1,15 @@
 package gatsby.model;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 /** Tests ordering, mutation, and read-only access in {@link TaskList}. */
 class TaskListTest {
@@ -75,8 +75,8 @@ class TaskListTest {
 
         List<Task> view = tasks.asList();
 
-        assertThrows(UnsupportedOperationException.class,
-                () -> view.add(new Todo("should not be added")));
+        assertThrows(UnsupportedOperationException.class, () ->
+                view.add(new Todo("should not be added")));
         assertEquals(1, tasks.size());
     }
 }

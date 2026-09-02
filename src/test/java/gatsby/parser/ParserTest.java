@@ -1,9 +1,10 @@
 package gatsby.parser;
 
-import gatsby.command.CommandType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import gatsby.command.CommandType;
 
 /** Tests the command and payload extraction performed by {@link Parser}. */
 class ParserTest {

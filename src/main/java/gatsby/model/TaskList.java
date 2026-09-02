@@ -1,10 +1,10 @@
 package gatsby.model;
 
-import gatsby.storage.Storage;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import gatsby.storage.Storage;
 
 /**
  * Owns Gatsby's in-memory collection of tasks.

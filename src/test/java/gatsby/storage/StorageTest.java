@@ -1,13 +1,9 @@
 package gatsby.storage;
 
-import gatsby.model.Deadline;
-import gatsby.model.Event;
-import gatsby.model.Task;
-import gatsby.model.Todo;
-import gatsby.testutil.TestSupport;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -17,10 +13,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import gatsby.model.Deadline;
+import gatsby.model.Event;
+import gatsby.model.Task;
+import gatsby.model.Todo;
+import gatsby.testutil.TestSupport;
 
 /** Tests persistence round trips and recovery from malformed save files. */
 class StorageTest {

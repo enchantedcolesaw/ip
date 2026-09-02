@@ -1,17 +1,18 @@
 package gatsby.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import gatsby.exception.EmptyMarkingException;
 import gatsby.exception.InvalidTaskException;
 import gatsby.model.TaskList;
 import gatsby.model.Todo;
 import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Tests marking tasks and reporting repeated or invalid marking requests. */
 class MarkCommandTest extends AbstractCommandTest {
@@ -46,15 +47,15 @@ class MarkCommandTest extends AbstractCommandTest {
     /** Verifies that marking without a task number is rejected. */
     @Test
     void execute_missingTaskNumber_throwsException() {
-        assertThrows(EmptyMarkingException.class,
-                () -> new MarkCommand("").execute(new TaskList(), recordingUi(), null));
+        assertThrows(EmptyMarkingException.class, () ->
+                new MarkCommand("").execute(new TaskList(), recordingUi(), null));
     }
 
     /** Verifies that a task number outside the list is rejected. */
     @Test
     void execute_outOfRangeTaskNumber_throwsException() {
-        assertThrows(InvalidTaskException.class,
-                () -> new MarkCommand("2").execute(
+        assertThrows(InvalidTaskException.class, () ->
+                new MarkCommand("2").execute(
                         new TaskList(List.of(new Todo("read book"))), recordingUi(), null));
     }
 }

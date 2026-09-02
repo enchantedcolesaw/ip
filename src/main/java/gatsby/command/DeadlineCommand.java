@@ -1,13 +1,13 @@
 package gatsby.command;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import gatsby.exception.GatsbyException;
 import gatsby.model.Deadline;
 import gatsby.model.TaskList;
 import gatsby.storage.Storage;
 import gatsby.ui.Ui;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Creates and saves a deadline task.

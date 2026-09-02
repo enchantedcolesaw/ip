@@ -1,11 +1,12 @@
 package gatsby.command;
 
-import gatsby.testutil.RecordingUi;
-import gatsby.testutil.TestSupport;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.nio.file.Path;
+import gatsby.testutil.RecordingUi;
+import gatsby.testutil.TestSupport;
 
 /** Shares filesystem isolation and UI setup for command tests. */
 abstract class AbstractCommandTest {

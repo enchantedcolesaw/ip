@@ -1,16 +1,17 @@
 package gatsby.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import gatsby.exception.EmptyMarkingException;
 import gatsby.model.TaskList;
 import gatsby.model.Todo;
 import gatsby.testutil.RecordingUi;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Tests unmarking tasks and reporting repeated or invalid unmarking requests. */
 class UnmarkCommandTest extends AbstractCommandTest {
@@ -45,7 +46,7 @@ class UnmarkCommandTest extends AbstractCommandTest {
     /** Verifies that unmarking without a task number is rejected. */
     @Test
     void execute_missingTaskNumber_throwsException() {
-        assertThrows(EmptyMarkingException.class,
-                () -> new UnmarkCommand("").execute(new TaskList(), recordingUi(), null));
+        assertThrows(EmptyMarkingException.class, () ->
+                new UnmarkCommand("").execute(new TaskList(), recordingUi(), null));
     }
 }
