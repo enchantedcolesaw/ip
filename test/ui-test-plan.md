@@ -250,6 +250,32 @@ No matching tasks found :(
 OOPS! How do I even find nothing??
 ```
 
+## Test 11: Display the command reference
+
+Aim: Verify that users can request help directly with either the `help` command or its `?` alias.
+
+Input:
+```text
+help
+?
+bye
+```
+
+Expected output:
+```text
+Here are the commands I know:
+todo <description> - add a task
+deadline <description> /by <yyyy-MM-dd HHmm> - add a deadline
+event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm> - add an event
+list - show all tasks
+find <keyword> - find matching tasks
+mark <number> / unmark <number> - update a task's status
+delete <number> - remove a task
+help or ? - show this help
+bye - exit Gatsby
+Here are the commands I know:
+```
+
 # Manual checks
 
 These are not run by the automated runner, because the runner deletes `data/gatsby.txt` before every case to keep cases independent.

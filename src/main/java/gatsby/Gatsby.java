@@ -10,6 +10,7 @@ import gatsby.command.DeleteCommand;
 import gatsby.command.EventCommand;
 import gatsby.command.ExitCommand;
 import gatsby.command.FindCommand;
+import gatsby.command.HelpCommand;
 import gatsby.command.ListCommand;
 import gatsby.command.MarkCommand;
 import gatsby.command.TodoCommand;
@@ -96,6 +97,9 @@ public class Gatsby {
                 command.execute(tasks, ui, null);
             } else if (commandType == CommandType.UNMARK) {
                 Command command = new UnmarkCommand(payload);
+                command.execute(tasks, ui, null);
+            } else if (commandType == CommandType.HELP) {
+                Command command = new HelpCommand();
                 command.execute(tasks, ui, null);
             } else if (commandType == CommandType.TODO
                     || commandType == CommandType.DEADLINE
