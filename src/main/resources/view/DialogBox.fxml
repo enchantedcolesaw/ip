@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root type="javafx.scene.layout.HBox" alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308"
+         styleClass="dialog-box" xmlns="http://javafx.com/javafx/25"
+         xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ImageView fx:id="gatsbyImage" fitHeight="48.0" fitWidth="48.0"
+                   managed="false" preserveRatio="true" styleClass="gatsby-avatar" visible="false">
+            <image>
+                <Image url="@../images/gatsby.jpeg" />
+            </image>
+        </ImageView>
+        <Label fx:id="speaker" styleClass="speaker" text="You" />
+        <Label fx:id="dialog" maxWidth="440.0" styleClass="dialog-text" text="Message"
+               wrapText="true" />
+        <ImageView fx:id="userImage" fitHeight="48.0" fitWidth="48.0"
+                   managed="false" preserveRatio="true" styleClass="user-avatar" visible="false">
+            <image>
+                <Image url="@../images/user.jpeg" />
+            </image>
+        </ImageView>
+    </children>
+    <padding>
+        <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+    </padding>
+</fx:root>

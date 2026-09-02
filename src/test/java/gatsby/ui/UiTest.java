@@ -50,6 +50,7 @@ class UiTest {
         String printed = output.toString(StandardCharsets.UTF_8);
         assertTrue(printed.contains("*              Gatsby              *"));
         assertTrue(printed.contains("Wassup! I'm Gatsby."));
+        assertTrue(printed.contains(Ui.getStartingJoke()));
         assertTrue(printed.contains("____________________________________________________________"));
         assertTrue(printed.contains("line\n"));
         assertTrue(printed.endsWith("partial"));

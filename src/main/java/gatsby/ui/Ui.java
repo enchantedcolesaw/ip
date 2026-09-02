@@ -1,6 +1,8 @@
 package gatsby.ui;
 
+import java.io.InputStream;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 /**
  * Handles Gatsby's interaction with the console.
@@ -18,9 +20,43 @@ public class Ui {
     /** Reads commands from standard input for the current Gatsby session. */
     private final Scanner scanner;
 
+    /** Receives complete lines printed by this UI. */
+    private final Consumer<String> lineOutput;
+
+    /** Receives text printed without an automatic newline. */
+    private final Consumer<String> output;
+
     /** Creates a console UI connected to standard input. */
     public Ui() {
-        this.scanner = new Scanner(System.in);
+        this(new Scanner(System.in), System.out::println, System.out::print);
+    }
+
+    /**
+     * Creates a UI that sends its output to the supplied line consumer.
+     *
+     * This constructor lets non-console front ends reuse Gatsby's command logic
+     * without having to parse console output from standard output.
+     *
+     * @param lineOutput the destination for complete output lines
+     */
+    public Ui(Consumer<String> lineOutput) {
+        this(new Scanner(InputStream.nullInputStream()), lineOutput, lineOutput);
+    }
+
+    /**
+     * Returns the joke included in Gatsby's welcome message.
+     *
+     * @return Gatsby's starting joke
+     */
+    public static String getStartingJoke() {
+        return START_JOKE;
+    }
+
+    /** Creates a UI with explicit input and output collaborators. */
+    private Ui(Scanner scanner, Consumer<String> lineOutput, Consumer<String> output) {
+        this.scanner = scanner;
+        this.lineOutput = lineOutput;
+        this.output = output;
     }
 
     /** Prints Gatsby's banner and welcome message. */
@@ -28,11 +64,11 @@ public class Ui {
         String banner = "************************************\n"
                 + "*              Gatsby              *\n"
                 + "************************************\n";
-        System.out.println(banner);
+        print(banner);
         String welcome = "Wassup! I'm Gatsby.\n"
                 + START_JOKE + "\n"
                 + "What can I do for you?\n";
-        System.out.print(welcome);
+        print(welcome);
     }
 
     /**
@@ -64,7 +100,7 @@ public class Ui {
      * @param message the message to display
      */
     public void printLine(String message) {
-        System.out.println(message);
+        lineOutput.accept(message);
     }
 
     /**
@@ -73,7 +109,7 @@ public class Ui {
      * @param message the message to display
      */
     public void print(String message) {
-        System.out.print(message);
+        output.accept(message);
     }
 
     /** Closes the input reader at the end of the session. */
