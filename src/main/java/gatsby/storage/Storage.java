@@ -54,6 +54,10 @@ public class Storage {
      * @param tasks the current task list
      */
     public static void save(List<Task> tasks) {
+        assert tasks != null : "Storage must be given a task collection to save.";
+        for (Task task : tasks) {
+            assert task != null : "The task collection being saved must not contain null tasks.";
+        }
         // On a fresh copy of the project the data folder does not exist yet,
         // so it is created on the first save rather than assumed to be there.
         File directory = new File(DATA_DIRECTORY);
@@ -111,7 +115,9 @@ public class Storage {
                     continue;
                 }
                 try {
-                    tasks.add(parseLine(line));
+                    Task task = parseLine(line);
+                    assert task != null : "A valid save-file line must reconstruct a task.";
+                    tasks.add(task);
                 } catch (GatsbyException e) {
                     skippedLines++;
                     System.out.println(" OOPS! I skipped a line I couldn't read in my save file: " + line);
@@ -170,6 +176,8 @@ public class Storage {
         if (doneFlag.equals("1")) {
             task.markDone();
         }
+        assert task.isDone() == doneFlag.equals("1")
+                : "A reconstructed task must preserve the saved completion status.";
         return task;
     }
 
