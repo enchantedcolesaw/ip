@@ -1,7 +1,11 @@
 package gatsby.command;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import gatsby.exception.EmptyPayloadException;
 import gatsby.exception.GatsbyException;
+import gatsby.model.Task;
 import gatsby.model.TaskList;
 import gatsby.storage.Storage;
 import gatsby.ui.Ui;
@@ -40,20 +44,17 @@ public class FindCommand extends Command {
             throw new EmptyPayloadException("OOPS! How do I even find nothing??");
         }
 
-        TaskList matches = new TaskList();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getTaskName().contains(payload)) {
-                matches.add(tasks.get(i));
-            }
-        }
+        List<Task> matches = tasks.asList().stream()
+                .filter(task -> task.getTaskName().contains(payload))
+                .toList();
 
         if (matches.isEmpty()) {
             ui.printLine(" No matching tasks found :(");
         } else {
             ui.printLine(" Here are the matching tasks in your list:");
-            for (int i = 0; i < matches.size(); i++) {
-                ui.printLine(" " + (i + 1) + ". " + matches.get(i));
-            }
+            IntStream.range(0, matches.size())
+                    .mapToObj(index -> " " + (index + 1) + ". " + matches.get(index))
+                    .forEach(ui::printLine);
         }
     }
 }

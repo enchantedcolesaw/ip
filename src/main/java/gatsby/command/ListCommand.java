@@ -1,5 +1,7 @@
 package gatsby.command;
 
+import java.util.stream.IntStream;
+
 import gatsby.model.TaskList;
 import gatsby.storage.Storage;
 import gatsby.ui.Ui;
@@ -26,8 +28,8 @@ public class ListCommand extends Command {
             ui.printLine(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");
             return;
         }
-        for (int i = 0; i < tasks.size(); i++) {
-            ui.printLine(" " + (i + 1) + ". " + tasks.get(i));
-        }
+        IntStream.range(0, tasks.size())
+                .mapToObj(index -> " " + (index + 1) + ". " + tasks.get(index))
+                .forEach(ui::printLine);
     }
 }
