@@ -28,6 +28,10 @@ public class TaskList {
      * @param initialTasks tasks recovered from storage
      */
     public TaskList(List<Task> initialTasks) {
+        assert initialTasks != null : "A task list must be initialized with a task collection.";
+        for (Task task : initialTasks) {
+            assert task != null : "A task list must not contain null tasks.";
+        }
         this.tasks = new ArrayList<>(initialTasks);
     }
 
@@ -37,7 +41,11 @@ public class TaskList {
      * @param task the task to add
      */
     public void add(Task task) {
+        assert task != null : "A task list must not contain null tasks.";
+        int previousSize = tasks.size();
         tasks.add(task);
+        assert tasks.size() == previousSize + 1 : "Adding one task must increase the list size by one.";
+        assert tasks.get(previousSize) == task : "A newly added task must be stored at the end of the list.";
     }
 
     /**
@@ -47,6 +55,7 @@ public class TaskList {
      * @return the task at that position
      */
     public Task get(int index) {
+        assert index >= 0 && index < tasks.size() : "Task access must use a valid zero-based index.";
         return tasks.get(index);
     }
 
@@ -57,7 +66,12 @@ public class TaskList {
      * @return the removed task
      */
     public Task remove(int index) {
-        return tasks.remove(index);
+        assert index >= 0 && index < tasks.size() : "Task removal must use a valid zero-based index.";
+        int previousSize = tasks.size();
+        Task removedTask = tasks.remove(index);
+        assert tasks.size() == previousSize - 1 : "Removing one task must decrease the list size by one.";
+        assert removedTask != null : "Removing a task must return a non-null task.";
+        return removedTask;
     }
 
     /**
