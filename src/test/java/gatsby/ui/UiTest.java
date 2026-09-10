@@ -52,7 +52,7 @@ class UiTest {
         assertTrue(printed.contains("Wassup! I'm Gatsby."));
         assertTrue(printed.contains(Ui.getStartingJoke()));
         assertTrue(printed.contains("____________________________________________________________"));
-        assertTrue(printed.contains("line\n"));
+        assertTrue(printed.contains("line" + System.lineSeparator()));
         assertTrue(printed.endsWith("partial"));
         ui.close();
     }
