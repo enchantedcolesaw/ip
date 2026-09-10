@@ -224,29 +224,41 @@ OOPS! Please leave out the "|" character; I use it to separate fields in my save
 There's nothing here yet! Go ahead and add any tasks you'd like! :)
 ```
 
-## Test 10: Find tasks by description keyword
+## Test 10: Find tasks by flexible description search
 
-Aim: Verify that `find` lists matching tasks across task types, searches only descriptions, reports no matches, and rejects an empty keyword.
+Aim: Verify that `find` is case-insensitive, supports partial and multi-word matching, prioritizes exact word matches, displays original task numbers, searches only descriptions, reports no matches, and rejects an empty query.
 
 Input:
 ```text
-todo read book
-deadline return report /by 2019-12-02 1800
+todo notebook shopping
+todo buy book
 event book club /from 2019-12-03 1400 /to 2019-12-03 1600
-find book
+todo book
+find BOOK
+find club book
 find 2019
 find missing
+find b
 find
 bye
 ```
 
 Expected output:
 ```text
-Here are the matching tasks in your list:
-1. [T][ ] read book
-2. [E][ ] book club (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
+Here are the matching tasks in your list (numbers refer to your full task list):
+2. [T][ ] buy book
+3. [E][ ] book club (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
+4. [T][ ] book
+1. [T][ ] notebook shopping
+Here are the matching tasks in your list (numbers refer to your full task list):
+3. [E][ ] book club (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
 No matching tasks found :(
 No matching tasks found :(
+Here are the matching tasks in your list (numbers refer to your full task list):
+1. [T][ ] notebook shopping
+2. [T][ ] buy book
+3. [E][ ] book club (from: Dec 03 2019 14:00:00 to: Dec 03 2019 16:00:00)
+4. [T][ ] book
 OOPS! How do I even find nothing??
 ```
 
