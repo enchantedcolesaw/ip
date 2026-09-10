@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import gatsby.exception.GatsbyException;
 import gatsby.model.Event;
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -30,11 +29,10 @@ public class EventCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused until storage becomes an instance dependency
      * @throws GatsbyException when the description or event times are missing or invalid
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         String[] eventParts = splitOnKeyword(payload, "/from",
                 " son there's no event name/timing for this event -_-!");
         String[] timeParts = splitOnKeyword(eventParts[1], "/to",

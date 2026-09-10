@@ -18,7 +18,7 @@ class ListCommandTest extends AbstractCommandTest {
     void execute_emptyList_reportsNothingToList() {
         RecordingUi ui = recordingUi();
 
-        new ListCommand().execute(new TaskList(), ui, null);
+        new ListCommand().execute(new TaskList(), ui);
 
         assertEquals(List.of(" Here are the tasks in your list:",
                 " There's nothing here yet! Go ahead and add any tasks you'd like! :)"),
@@ -31,7 +31,7 @@ class ListCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(new Todo("first"), new Todo("second")));
         RecordingUi ui = recordingUi();
 
-        new ListCommand().execute(tasks, ui, null);
+        new ListCommand().execute(tasks, ui);
 
         assertEquals(List.of(" Here are the tasks in your list:",
                 " 1. [T][ ] first", " 2. [T][ ] second"), ui.messages());

@@ -54,6 +54,10 @@ public class Storage {
      * @param tasks the current task list
      */
     public static void save(List<Task> tasks) {
+        assert tasks != null : "Storage must be given a task collection to save.";
+        for (Task task : tasks) {
+            assert task != null : "The task collection being saved must not contain null tasks.";
+        }
         // On a fresh copy of the project the data folder does not exist yet,
         // so it is created on the first save rather than assumed to be there.
         File directory = new File(DATA_DIRECTORY);
@@ -89,20 +93,42 @@ public class Storage {
      * @return the tasks stored on disk, in the order they were saved
      */
     public static ArrayList<Task> load() {
-        ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(DATA_FILE);
+        if (!isLoadableFile(file)) {
+            return new ArrayList<>();
+        }
+        return readTasks(file);
+    }
+
+    /**
+     * Checks whether the save path points to a file that Gatsby can load.
+     *
+     * @param file the save path to inspect
+     * @return true when the save file exists and is not a directory
+     */
+    private static boolean isLoadableFile(File file) {
         // A missing folder or a missing file is the normal first-run state: someone
         // has just cloned the project and has not saved anything yet. Both simply
         // mean "no tasks saved", so an empty list is returned without any warning.
         if (!file.exists()) {
-            return tasks;
+            return false;
         }
         if (file.isDirectory()) {
             System.out.println(" OOPS! \"" + DATA_FILE + "\" is a folder, not my save file,"
                     + " so I'm starting with an empty list.");
-            return tasks;
+            return false;
         }
+        return true;
+    }
 
+    /**
+     * Reads and reconstructs all valid tasks from a save file.
+     *
+     * @param file the save file to read
+     * @return the valid tasks found in the file
+     */
+    private static ArrayList<Task> readTasks(File file) {
+        ArrayList<Task> tasks = new ArrayList<>();
         int skippedLines = 0;
         try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
@@ -111,7 +137,9 @@ public class Storage {
                     continue;
                 }
                 try {
-                    tasks.add(parseLine(line));
+                    Task task = parseLine(line);
+                    assert task != null : "A valid save-file line must reconstruct a task.";
+                    tasks.add(task);
                 } catch (GatsbyException e) {
                     skippedLines++;
                     System.out.println(" OOPS! I skipped a line I couldn't read in my save file: " + line);
@@ -170,6 +198,8 @@ public class Storage {
         if (doneFlag.equals("1")) {
             task.markDone();
         }
+        assert task.isDone() == doneFlag.equals("1")
+                : "A reconstructed task must preserve the saved completion status.";
         return task;
     }
 

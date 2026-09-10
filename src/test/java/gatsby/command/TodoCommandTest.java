@@ -20,7 +20,7 @@ class TodoCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList();
         RecordingUi ui = recordingUi();
 
-        new TodoCommand("  buy milk  ").execute(tasks, ui, null);
+        new TodoCommand("  buy milk  ").execute(tasks, ui);
 
         assertEquals(1, tasks.size());
         assertEquals("buy milk", tasks.get(0).getTaskName());
@@ -34,7 +34,7 @@ class TodoCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList();
 
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
-                new TodoCommand("  ").execute(tasks, recordingUi(), null));
+                new TodoCommand("  ").execute(tasks, recordingUi()));
 
         assertEquals(" son the description of a todo cannot be empty -_-!", exception.getMessage());
         assertEquals(0, tasks.size());
@@ -44,7 +44,7 @@ class TodoCommandTest extends AbstractCommandTest {
     @Test
     void execute_descriptionContainsSeparator_throwsException() {
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
-                new TodoCommand("read | book").execute(new TaskList(), recordingUi(), null));
+                new TodoCommand("read | book").execute(new TaskList(), recordingUi()));
 
         assertEquals(" OOPS! Please leave out the \"|\" character; I use it to separate fields in my save file.",
                 exception.getMessage());

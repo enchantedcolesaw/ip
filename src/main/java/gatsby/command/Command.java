@@ -28,10 +28,9 @@ public abstract class Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler
      * @throws GatsbyException when the command cannot be completed
      */
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException;
+    public abstract void execute(TaskList tasks, Ui ui) throws GatsbyException;
 
     /**
      * Checks whether this command ends the current Gatsby session.
@@ -51,7 +50,13 @@ public abstract class Command {
      * @param task the newly created task
      */
     protected void addTask(TaskList tasks, Ui ui, Task task) {
+        assert tasks != null : "A task-creation command requires a task list.";
+        assert ui != null : "A task-creation command requires a UI handler.";
+        assert task != null : "A task-creation command must create a task before adding it.";
+        int previousSize = tasks.size();
         tasks.add(task);
+        assert tasks.size() == previousSize + 1 : "A successful task addition must increase the list size by one.";
+        assert tasks.get(previousSize) == task : "A newly created task must be appended to the task list.";
         Storage.save(tasks.asList());
         ui.printLine(" Got it. I've added this task:");
         ui.printLine("  " + task);
@@ -76,6 +81,9 @@ public abstract class Command {
             throw new EmptyPayloadException(" OOPS! Please leave out the \"" + FIELD_SEPARATOR
                     + "\" character; I use it to separate fields in my save file.");
         }
+        assert !trimmedText.isEmpty() : "Validated text must not be empty.";
+        assert !trimmedText.contains(FIELD_SEPARATOR)
+                : "Validated text must not contain the storage field separator.";
         return trimmedText;
     }
 
@@ -94,6 +102,7 @@ public abstract class Command {
         if (parts.length < 2) {
             throw new EmptyPayloadException(errorMessage);
         }
+        assert parts.length == 2 : "Splitting with a limit of two must produce exactly two parts here.";
         return parts;
     }
 
@@ -120,7 +129,10 @@ public abstract class Command {
             throw new InvalidTaskException(" OOPS! There's no task " + taskNumber
                     + "! Pick a number from 1 to " + tasks.size() + ".");
         }
-        return taskNumber - 1;
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "A validated task number must map to a valid zero-based index.";
+        return taskIndex;
     }
 
     /**
@@ -147,6 +159,7 @@ public abstract class Command {
         } else {
             task.markUndone();
         }
+        assert task.isDone() == isMarking : "Task status must match the requested mark or unmark operation.";
         Storage.save(tasks.asList());
 
         if (wasAlreadyInState) {

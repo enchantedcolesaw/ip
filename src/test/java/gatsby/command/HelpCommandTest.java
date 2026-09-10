@@ -18,7 +18,7 @@ class HelpCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList();
         RecordingUi ui = recordingUi();
 
-        new HelpCommand().execute(tasks, ui, null);
+        new HelpCommand().execute(tasks, ui);
 
         assertEquals(List.of(
                 " Here are the commands I know:",
