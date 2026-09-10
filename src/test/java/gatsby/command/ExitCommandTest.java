@@ -16,7 +16,7 @@ class ExitCommandTest extends AbstractCommandTest {
         RecordingUi ui = recordingUi();
         ExitCommand command = new ExitCommand();
 
-        command.execute(null, ui, null);
+        command.execute(null, ui);
 
         assertEquals(" Bye. Hope to see you again soon!", ui.messages().get(0));
         assertTrue(command.isExit());

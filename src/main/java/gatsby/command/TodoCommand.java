@@ -4,7 +4,6 @@ import gatsby.exception.GatsbyException;
 import gatsby.model.Task;
 import gatsby.model.TaskList;
 import gatsby.model.Todo;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -28,11 +27,10 @@ public class TodoCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused until storage becomes an instance dependency
      * @throws GatsbyException when the todo description is empty or invalid
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         Task task = new Todo(requireText(payload,
                 " son the description of a todo cannot be empty -_-!"));
         addTask(tasks, ui, task);

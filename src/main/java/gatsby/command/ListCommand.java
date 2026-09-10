@@ -1,7 +1,6 @@
 package gatsby.command;
 
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -17,10 +16,9 @@ public class ListCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused because listing does not change data
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, Ui ui) {
         ui.printLine(" Here are the tasks in your list:");
         if (tasks.isEmpty()) {
             ui.printLine(" There's nothing here yet! Go ahead and add any tasks you'd like! :)");

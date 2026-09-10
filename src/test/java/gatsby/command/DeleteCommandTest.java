@@ -22,7 +22,7 @@ class DeleteCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(new Todo("first"), new Todo("second")));
         RecordingUi ui = recordingUi();
 
-        new DeleteCommand("1").execute(tasks, ui, null);
+        new DeleteCommand("1").execute(tasks, ui);
 
         assertEquals(1, tasks.size());
         assertEquals("second", tasks.get(0).getTaskName());
@@ -34,7 +34,7 @@ class DeleteCommandTest extends AbstractCommandTest {
     @Test
     void execute_missingTaskNumber_throwsException() {
         assertThrows(EmptyPayloadException.class, () ->
-                new DeleteCommand("").execute(new TaskList(), recordingUi(), null));
+                new DeleteCommand("").execute(new TaskList(), recordingUi()));
     }
 
     /** Verifies that deleting an out-of-range task is rejected. */
@@ -42,6 +42,6 @@ class DeleteCommandTest extends AbstractCommandTest {
     void execute_outOfRangeTaskNumber_throwsException() {
         assertThrows(InvalidTaskException.class, () ->
                 new DeleteCommand("3").execute(
-                        new TaskList(List.of(new Todo("only task"))), recordingUi(), null));
+                        new TaskList(List.of(new Todo("only task"))), recordingUi()));
     }
 }

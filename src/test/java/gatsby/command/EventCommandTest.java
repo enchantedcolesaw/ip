@@ -24,7 +24,7 @@ class EventCommandTest extends AbstractCommandTest {
         RecordingUi ui = recordingUi();
 
         new EventCommand("project meeting /from 2019-12-02 1400 /to 2019-12-02 1600")
-                .execute(tasks, ui, null);
+                .execute(tasks, ui);
 
         assertEquals(1, tasks.size());
         Event event = assertInstanceOf(Event.class, tasks.get(0));
@@ -40,7 +40,7 @@ class EventCommandTest extends AbstractCommandTest {
     @Test
     void execute_missingFromKeyword_throwsException() {
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
-                new EventCommand("project meeting").execute(new TaskList(), recordingUi(), null));
+                new EventCommand("project meeting").execute(new TaskList(), recordingUi()));
 
         assertEquals(" son there's no event name/timing for this event -_-!", exception.getMessage());
     }
@@ -50,7 +50,7 @@ class EventCommandTest extends AbstractCommandTest {
     void execute_missingToKeyword_throwsException() {
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
                 new EventCommand("project meeting /from 2019-12-02 1400")
-                        .execute(new TaskList(), recordingUi(), null));
+                        .execute(new TaskList(), recordingUi()));
 
         assertEquals(" son this event has no end time, it's infinite! -_-!", exception.getMessage());
     }
@@ -60,6 +60,6 @@ class EventCommandTest extends AbstractCommandTest {
     void execute_invalidDate_throwsDateParseException() {
         assertThrows(DateTimeParseException.class, () ->
                 new EventCommand("meeting /from today /to tomorrow")
-                        .execute(new TaskList(), recordingUi(), null));
+                        .execute(new TaskList(), recordingUi()));
     }
 }

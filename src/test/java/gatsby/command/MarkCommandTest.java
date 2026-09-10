@@ -23,7 +23,7 @@ class MarkCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(new Todo("read book")));
         RecordingUi ui = recordingUi();
 
-        new MarkCommand("1").execute(tasks, ui, null);
+        new MarkCommand("1").execute(tasks, ui);
 
         assertTrue(tasks.get(0).isDone());
         assertEquals(List.of(" Nice! I've marked this task as done:",
@@ -38,7 +38,7 @@ class MarkCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(todo));
         RecordingUi ui = recordingUi();
 
-        new MarkCommand("1").execute(tasks, ui, null);
+        new MarkCommand("1").execute(tasks, ui);
 
         assertEquals(List.of(" That one was already done, but sure:",
                 "  [T][X] read book"), ui.messages());
@@ -48,7 +48,7 @@ class MarkCommandTest extends AbstractCommandTest {
     @Test
     void execute_missingTaskNumber_throwsException() {
         assertThrows(EmptyMarkingException.class, () ->
-                new MarkCommand("").execute(new TaskList(), recordingUi(), null));
+                new MarkCommand("").execute(new TaskList(), recordingUi()));
     }
 
     /** Verifies that a task number outside the list is rejected. */
@@ -56,6 +56,6 @@ class MarkCommandTest extends AbstractCommandTest {
     void execute_outOfRangeTaskNumber_throwsException() {
         assertThrows(InvalidTaskException.class, () ->
                 new MarkCommand("2").execute(
-                        new TaskList(List.of(new Todo("read book"))), recordingUi(), null));
+                        new TaskList(List.of(new Todo("read book"))), recordingUi()));
     }
 }

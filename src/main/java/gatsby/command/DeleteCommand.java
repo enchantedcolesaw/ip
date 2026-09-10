@@ -28,11 +28,10 @@ public class DeleteCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused until storage becomes an instance dependency
      * @throws GatsbyException when the task number is missing or invalid
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         if (payload.isEmpty()) {
             throw new EmptyPayloadException(" OOPS! How do I even delete nothing??");
         }

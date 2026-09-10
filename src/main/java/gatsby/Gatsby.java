@@ -83,7 +83,7 @@ public class Gatsby {
 
             Parser.ParsedCommand parsedCommand = parser.parse(input);
             Command command = createCommand(parsedCommand);
-            command.execute(tasks, ui, null);
+            command.execute(tasks, ui);
             return command.isExit();
         } catch (GatsbyException e) {
             ui.printLine(e.getMessage());

@@ -2,7 +2,6 @@ package gatsby.command;
 
 import gatsby.exception.GatsbyException;
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -26,11 +25,10 @@ public class MarkCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused until storage becomes an instance dependency
      * @throws GatsbyException when the task number is missing or invalid
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         updateTaskStatus(tasks, ui, payload, true);
     }
 }

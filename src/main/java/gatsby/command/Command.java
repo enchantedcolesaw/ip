@@ -28,10 +28,9 @@ public abstract class Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler
      * @throws GatsbyException when the command cannot be completed
      */
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException;
+    public abstract void execute(TaskList tasks, Ui ui) throws GatsbyException;
 
     /**
      * Checks whether this command ends the current Gatsby session.
