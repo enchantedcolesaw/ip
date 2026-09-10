@@ -24,7 +24,7 @@ class UnmarkCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(todo));
         RecordingUi ui = recordingUi();
 
-        new UnmarkCommand("1").execute(tasks, ui, null);
+        new UnmarkCommand("1").execute(tasks, ui);
 
         assertFalse(tasks.get(0).isDone());
         assertEquals(List.of(" OK, I've marked this task as not done yet:",
@@ -37,7 +37,7 @@ class UnmarkCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList(List.of(new Todo("read book")));
         RecordingUi ui = recordingUi();
 
-        new UnmarkCommand("1").execute(tasks, ui, null);
+        new UnmarkCommand("1").execute(tasks, ui);
 
         assertEquals(List.of(" That one wasn't done yet, but sure:",
                 "  [T][ ] read book"), ui.messages());
@@ -47,6 +47,6 @@ class UnmarkCommandTest extends AbstractCommandTest {
     @Test
     void execute_missingTaskNumber_throwsException() {
         assertThrows(EmptyMarkingException.class, () ->
-                new UnmarkCommand("").execute(new TaskList(), recordingUi(), null));
+                new UnmarkCommand("").execute(new TaskList(), recordingUi()));
     }
 }

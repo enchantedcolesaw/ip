@@ -82,44 +82,9 @@ public class Gatsby {
             }
 
             Parser.ParsedCommand parsedCommand = parser.parse(input);
-            CommandType commandType = parsedCommand.getCommand();
-            String payload = parsedCommand.getPayload();
-
-            if (commandType == CommandType.BYE) {
-                Command command = new ExitCommand();
-                command.execute(tasks, ui, null);
-                return command.isExit();
-            } else if (commandType == CommandType.LIST) {
-                Command command = new ListCommand();
-                command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.MARK) {
-                Command command = new MarkCommand(payload);
-                command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.UNMARK) {
-                Command command = new UnmarkCommand(payload);
-                command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.HELP) {
-                Command command = new HelpCommand();
-                command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.TODO
-                    || commandType == CommandType.DEADLINE
-                    || commandType == CommandType.EVENT
-                    || commandType == CommandType.FIND) {
-                Command command = switch (commandType) {
-                    case TODO -> new TodoCommand(payload);
-                    case DEADLINE -> new DeadlineCommand(payload);
-                    case EVENT -> new EventCommand(payload);
-                    case FIND -> new FindCommand(payload);
-                    default -> throw new UnknownCommandException(" I don't recognise this command :'((");
-                };
-                command.execute(tasks, ui, null);
-            } else if (commandType == CommandType.DELETE) {
-                Command command = new DeleteCommand(payload);
-                command.execute(tasks, ui, null);
-            } else {
-                throw new UnknownCommandException(" Wait I don't recognise that yet :(\n"
-                        + " I know: todo, deadline, event, list, find, mark, unmark, delete, bye.");
-            }
+            Command command = createCommand(parsedCommand);
+            command.execute(tasks, ui);
+            return command.isExit();
         } catch (GatsbyException e) {
             ui.printLine(e.getMessage());
         } catch (RuntimeException e) {
@@ -130,6 +95,32 @@ public class Gatsby {
             }
         }
         return false;
+    }
+
+    /**
+     * Creates the executable command represented by a parsed input line.
+     *
+     * @param parsedCommand the parsed command and its payload
+     * @return the executable command
+     * @throws UnknownCommandException when the parser cannot identify the command
+     */
+    private Command createCommand(Parser.ParsedCommand parsedCommand) throws UnknownCommandException {
+        CommandType commandType = parsedCommand.getCommand();
+        String payload = parsedCommand.getPayload();
+        return switch (commandType) {
+            case BYE -> new ExitCommand();
+            case LIST -> new ListCommand();
+            case MARK -> new MarkCommand(payload);
+            case UNMARK -> new UnmarkCommand(payload);
+            case HELP -> new HelpCommand();
+            case TODO -> new TodoCommand(payload);
+            case DEADLINE -> new DeadlineCommand(payload);
+            case EVENT -> new EventCommand(payload);
+            case FIND -> new FindCommand(payload);
+            case DELETE -> new DeleteCommand(payload);
+            case UNKNOWN -> throw new UnknownCommandException(" Wait I don't recognise that yet :(\n"
+                    + " I know: todo, deadline, event, list, find, mark, unmark, delete, bye.");
+        };
     }
 
     /**

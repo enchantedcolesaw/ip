@@ -1,7 +1,6 @@
 package gatsby.command;
 
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -13,15 +12,14 @@ public class ExitCommand extends Command {
     }
 
     /**
-     * Displays the goodbye message. The collaborators are unused for this
-     * command, but are accepted to keep the common command protocol uniform.
+     * Displays the goodbye message. The task list is unused for this command,
+     * but is accepted to keep the common command protocol uniform.
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, Ui ui) {
         ui.printLine(" Bye. Hope to see you again soon!");
     }
 

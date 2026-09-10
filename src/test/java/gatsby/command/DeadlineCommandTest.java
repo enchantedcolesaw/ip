@@ -23,7 +23,7 @@ class DeadlineCommandTest extends AbstractCommandTest {
         TaskList tasks = new TaskList();
         RecordingUi ui = recordingUi();
 
-        new DeadlineCommand("return book /by 2019-12-02 1800").execute(tasks, ui, null);
+        new DeadlineCommand("return book /by 2019-12-02 1800").execute(tasks, ui);
 
         assertEquals(1, tasks.size());
         Deadline deadline = assertInstanceOf(Deadline.class, tasks.get(0));
@@ -38,7 +38,7 @@ class DeadlineCommandTest extends AbstractCommandTest {
     @Test
     void execute_missingByKeyword_throwsException() {
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
-                new DeadlineCommand("return book").execute(new TaskList(), recordingUi(), null));
+                new DeadlineCommand("return book").execute(new TaskList(), recordingUi()));
 
         assertEquals(" son there's no name or deadline for this deadline -_-!", exception.getMessage());
     }
@@ -48,6 +48,6 @@ class DeadlineCommandTest extends AbstractCommandTest {
     void execute_invalidDate_throwsDateParseException() {
         assertThrows(DateTimeParseException.class, () ->
                 new DeadlineCommand("return book /by tomorrow").execute(
-                        new TaskList(), recordingUi(), null));
+                        new TaskList(), recordingUi()));
     }
 }

@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import gatsby.exception.GatsbyException;
 import gatsby.model.Deadline;
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -30,11 +29,10 @@ public class DeadlineCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused until storage becomes an instance dependency
      * @throws GatsbyException when the description or deadline is missing or invalid
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         String[] parts = splitOnKeyword(payload, "/by",
                 " son there's no name or deadline for this deadline -_-!");
         String description = requireText(parts[0],

@@ -28,7 +28,7 @@ class FindCommandTest extends AbstractCommandTest {
                         LocalDateTime.of(2019, 12, 3, 16, 0))));
         RecordingUi ui = recordingUi();
 
-        new FindCommand("book").execute(tasks, ui, null);
+        new FindCommand("book").execute(tasks, ui);
 
         assertEquals(List.of(" Here are the matching tasks in your list:",
                 " 1. [T][ ] read book",
@@ -43,7 +43,7 @@ class FindCommandTest extends AbstractCommandTest {
                 new Deadline("return report", LocalDateTime.of(2019, 12, 2, 18, 0))));
         RecordingUi ui = recordingUi();
 
-        new FindCommand("2019").execute(tasks, ui, null);
+        new FindCommand("2019").execute(tasks, ui);
 
         assertEquals(List.of(" No matching tasks found :("), ui.messages());
     }
@@ -54,7 +54,7 @@ class FindCommandTest extends AbstractCommandTest {
         RecordingUi ui = recordingUi();
 
         EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
-                new FindCommand("").execute(new TaskList(), ui, null));
+                new FindCommand("").execute(new TaskList(), ui));
 
         assertEquals("OOPS! How do I even find nothing??", exception.getMessage());
         assertEquals(List.of(), ui.messages());

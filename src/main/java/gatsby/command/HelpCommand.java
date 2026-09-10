@@ -1,7 +1,6 @@
 package gatsby.command;
 
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -17,10 +16,9 @@ public class HelpCommand extends Command {
      *
      * @param tasks the current task list, unused by this command
      * @param ui the interaction handler used to display the help text
-     * @param storage the task persistence handler, unused by this command
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, Ui ui) {
         ui.printLine(" Here are the commands I know:");
         ui.printLine("  todo <description> - add a task");
         ui.printLine("  deadline <description> /by <yyyy-MM-dd HHmm> - add a deadline");

@@ -3,7 +3,6 @@ package gatsby.command;
 import gatsby.exception.EmptyPayloadException;
 import gatsby.exception.GatsbyException;
 import gatsby.model.TaskList;
-import gatsby.storage.Storage;
 import gatsby.ui.Ui;
 
 /**
@@ -31,11 +30,10 @@ public class FindCommand extends Command {
      *
      * @param tasks the current task list
      * @param ui the console interaction handler
-     * @param storage the task persistence handler, unused because searching does not change data
      * @throws GatsbyException when the search keyword is empty
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws GatsbyException {
+    public void execute(TaskList tasks, Ui ui) throws GatsbyException {
         if (payload.isEmpty()) {
             throw new EmptyPayloadException("OOPS! How do I even find nothing??");
         }

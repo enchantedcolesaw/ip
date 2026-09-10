@@ -93,20 +93,42 @@ public class Storage {
      * @return the tasks stored on disk, in the order they were saved
      */
     public static ArrayList<Task> load() {
-        ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(DATA_FILE);
+        if (!isLoadableFile(file)) {
+            return new ArrayList<>();
+        }
+        return readTasks(file);
+    }
+
+    /**
+     * Checks whether the save path points to a file that Gatsby can load.
+     *
+     * @param file the save path to inspect
+     * @return true when the save file exists and is not a directory
+     */
+    private static boolean isLoadableFile(File file) {
         // A missing folder or a missing file is the normal first-run state: someone
         // has just cloned the project and has not saved anything yet. Both simply
         // mean "no tasks saved", so an empty list is returned without any warning.
         if (!file.exists()) {
-            return tasks;
+            return false;
         }
         if (file.isDirectory()) {
             System.out.println(" OOPS! \"" + DATA_FILE + "\" is a folder, not my save file,"
                     + " so I'm starting with an empty list.");
-            return tasks;
+            return false;
         }
+        return true;
+    }
 
+    /**
+     * Reads and reconstructs all valid tasks from a save file.
+     *
+     * @param file the save file to read
+     * @return the valid tasks found in the file
+     */
+    private static ArrayList<Task> readTasks(File file) {
+        ArrayList<Task> tasks = new ArrayList<>();
         int skippedLines = 0;
         try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
