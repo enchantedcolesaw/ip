@@ -57,10 +57,10 @@ public class MainWindow {
             return;
         }
 
-        String response = gatsby.getResponse(input);
+        Gatsby.Response response = gatsby.getResponseDetails(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input),
-                DialogBox.getGatsbyDialog(response));
+                DialogBox.getGatsbyDialog(response.getText(), response.isError()));
         userInput.clear();
 
         if (gatsby.isExitCommand(input)) {
