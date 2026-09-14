@@ -1,36 +1,39 @@
 .app-root {
-    -fx-background-color: #f7f3ed;
-    -fx-font-family: "Arial Rounded MT Bold";
+    -fx-background-color: #f4f7f8;
+    -fx-font-family: "Baskerville";
 }
 
 .header {
-    -fx-background-color: #203a43;
+    -fx-background-color: #17343b;
 }
 
 .title {
     -fx-text-fill: #f7f3ed;
-    -fx-font-size: 28px;
+    -fx-font-family: "Baskerville";
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
 }
 
 .subtitle {
     -fx-text-fill: #b7d4d0;
-    -fx-font-size: 13px;
+    -fx-font-family: "Baskerville";
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
 }
 
 .conversation-scroll {
     -fx-background-color: transparent;
-    -fx-background: #f7f3ed;
+    -fx-background: #f4f7f8;
     -fx-border-color: transparent;
 }
 
 .conversation-scroll > .viewport {
-    -fx-background-color: #f7f3ed;
+    -fx-background-color: #f4f7f8;
 }
 
 .conversation-scroll .content {
-    -fx-background-color: #f7f3ed;
-    -fx-padding: 18px 12px 18px 12px;
+    -fx-background-color: #f4f7f8;
+    -fx-padding: 14px 14px 16px 14px;
 }
 
 .dialog-box {
@@ -41,53 +44,87 @@
     -fx-alignment: top-left;
 }
 
-.gatsby-avatar,
-.user-avatar {
-    -fx-background-radius: 24px;
+.avatar {
+    -fx-opacity: 0.9;
+    -fx-effect: dropshadow(gaussian, rgba(23, 52, 59, 0.18), 3, 0.2, 0, 1);
+}
+
+.message-card {
+    -fx-spacing: 4px;
 }
 
 .speaker {
-    -fx-background-color: #cf8b6c;
-    -fx-background-radius: 18px;
-    -fx-min-width: 54px;
-    -fx-min-height: 30px;
+    -fx-background-color: #d77b5b;
+    -fx-background-radius: 10px;
+    -fx-padding: 3px 8px 3px 8px;
     -fx-alignment: center;
+    -fx-font-family: "Baskerville";
     -fx-text-fill: white;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 
 .gatsby-dialog .speaker {
-    -fx-background-color: #5d8b87;
+    -fx-background-color: #4d8c87;
 }
 
 .dialog-text {
     -fx-background-color: white;
-    -fx-background-radius: 14px;
-    -fx-padding: 10px 14px 10px 14px;
-    -fx-text-fill: #203a43;
-    -fx-font-size: 14px;
+    -fx-background-radius: 4px 14px 14px 14px;
+    -fx-padding: 9px 12px 9px 12px;
+    -fx-text-fill: #17343b;
+    -fx-font-size: 15px;
+}
+
+.user-dialog .message-card {
+    -fx-max-width: 420px;
+    -fx-alignment: top-right;
+}
+
+.user-dialog .dialog-text {
+    -fx-background-color: #dcecee;
+    -fx-background-radius: 14px 4px 14px 14px;
+}
+
+.error-dialog .speaker {
+    -fx-background-color: #b74747;
+}
+
+.error-dialog .dialog-text {
+    -fx-background-color: #fff0ee;
+    -fx-border-color: #e79a91;
+    -fx-border-radius: 4px 14px 14px 14px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #8f2929;
 }
 
 .composer {
     -fx-background-color: #ffffff;
-    -fx-border-color: #ded8d0 transparent transparent transparent;
+    -fx-border-color: #d7e0e2 transparent transparent transparent;
 }
 
 .composer .text-field {
     -fx-background-radius: 18px;
     -fx-border-radius: 18px;
-    -fx-border-color: #c8d2d0;
+    -fx-border-color: #b9cbcd;
+    -fx-font-size: 15px;
     -fx-padding: 10px 14px 10px 14px;
 }
 
+.composer .text-field:focused {
+    -fx-border-color: #4d8c87;
+    -fx-border-width: 2px;
+}
+
 .send-button {
-    -fx-background-color: #cf8b6c;
+    -fx-background-color: #d77b5b;
     -fx-background-radius: 18px;
     -fx-text-fill: white;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-padding: 9px 20px 9px 20px;
 }
 
 .send-button:hover {
-    -fx-background-color: #b97256;
+    -fx-background-color: #b95e43;
 }

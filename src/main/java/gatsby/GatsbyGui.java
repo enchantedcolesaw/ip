@@ -17,6 +17,12 @@ public class GatsbyGui extends Application {
     /** The default height of the chat window. */
     private static final double WINDOW_HEIGHT = 720.0;
 
+    /** The narrowest width that still leaves room for the composer. */
+    private static final double MIN_WINDOW_WIDTH = 380.0;
+
+    /** The shortest height that still leaves room for the conversation. */
+    private static final double MIN_WINDOW_HEIGHT = 460.0;
+
     /**
      * Loads and displays the FXML-defined Gatsby chat window.
      *
@@ -32,8 +38,8 @@ public class GatsbyGui extends Application {
 
             Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
             stage.setTitle("Gatsby");
-            stage.setMinWidth(WINDOW_WIDTH);
-            stage.setMinHeight(WINDOW_HEIGHT);
+            stage.setMinWidth(MIN_WINDOW_WIDTH);
+            stage.setMinHeight(MIN_WINDOW_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {

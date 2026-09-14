@@ -56,7 +56,7 @@ public class Gatsby {
             String input = ui.readLine();
             ui.showSeparator();
 
-            if (gatsby.handleInput(input, ui, true)) {
+            if (gatsby.handleInput(input, ui, true).isExit()) {
                 break;
             }
         }
@@ -71,30 +71,31 @@ public class Gatsby {
      * whole chat over an unforeseen bug would be worse than reporting it.
      *
      * @param input the raw line the user typed
-     * @return true when the user asked to quit, false to keep going
+     * @return the control-flow and presentation state produced by the input
      */
-    private boolean handleInput(String input, Ui ui, boolean showSeparators) {
+    private InputResult handleInput(String input, Ui ui, boolean showSeparators) {
         try {
             String trimmedInput = input.strip();
             if (trimmedInput.isEmpty()) {
                 ui.printLine(" You didn't type anything! Try \"todo read book\" or \"list\".");
-                return false;
+                return new InputResult(false, true);
             }
 
             Parser.ParsedCommand parsedCommand = parser.parse(input);
             Command command = createCommand(parsedCommand);
             command.execute(tasks, ui);
-            return command.isExit();
+            return new InputResult(command.isExit(), false);
         } catch (GatsbyException e) {
             ui.printLine(e.getMessage());
+            return new InputResult(false, true);
         } catch (RuntimeException e) {
             ui.printLine(" Yikes, something unexpected went wrong: " + e);
+            return new InputResult(false, true);
         } finally {
             if (showSeparators) {
                 ui.showSeparator();
             }
         }
-        return false;
     }
 
     /**
@@ -130,11 +131,21 @@ public class Gatsby {
      * @return Gatsby's response, without console separators
      */
     public String getResponse(String input) {
+        return getResponseDetails(input).getText();
+    }
+
+    /**
+     * Processes one command and includes whether Gatsby rejected it.
+     *
+     * @param input the command entered by the user
+     * @return the response text and its error state
+     */
+    public Response getResponseDetails(String input) {
         List<String> messages = new ArrayList<>();
         Ui responseUi = new Ui(messages::add);
-        handleInput(input, responseUi, false);
+        InputResult result = handleInput(input, responseUi, false);
         responseUi.close();
-        return String.join(System.lineSeparator(), messages);
+        return new Response(String.join(System.lineSeparator(), messages), result.isError());
     }
 
     /**
@@ -145,6 +156,64 @@ public class Gatsby {
      */
     public boolean isExitCommand(String input) {
         return parser.parse(input).getCommand() == CommandType.BYE;
+    }
+
+    /** Holds the user-facing text and presentation state for one response. */
+    public static final class Response {
+        /** The text to show in the conversation. */
+        private final String text;
+
+        /** Whether Gatsby could not process the user's command. */
+        private final boolean isError;
+
+        /** Creates a response value. */
+        private Response(String text, boolean isError) {
+            this.text = text;
+            this.isError = isError;
+        }
+
+        /**
+         * Returns the response text.
+         *
+         * @return the text to show in the conversation
+         */
+        public String getText() {
+            return text;
+        }
+
+        /**
+         * Returns whether the response describes a rejected command.
+         *
+         * @return true when the response is an error
+         */
+        public boolean isError() {
+            return isError;
+        }
+    }
+
+    /** Holds the control-flow state produced while handling one input. */
+    private static final class InputResult {
+        /** Whether the user asked to end the session. */
+        private final boolean isExit;
+
+        /** Whether the input could not be processed. */
+        private final boolean isError;
+
+        /** Creates an input result. */
+        private InputResult(boolean isExit, boolean isError) {
+            this.isExit = isExit;
+            this.isError = isError;
+        }
+
+        /** Returns whether the input was an exit command. */
+        private boolean isExit() {
+            return isExit;
+        }
+
+        /** Returns whether the input produced an error. */
+        private boolean isError() {
+            return isError;
+        }
     }
 
 }

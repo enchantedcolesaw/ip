@@ -70,4 +70,15 @@ class GatsbyTest {
         assertTrue(helpResponse.contains("Here are the commands I know:"));
         assertTrue(helpResponse.contains("help or ? - show this help"));
     }
+
+    /** Verifies that the GUI-facing response path identifies rejected commands. */
+    @Test
+    void getResponseDetails_unknownCommand_marksResponseAsError() {
+        Gatsby gatsby = new Gatsby();
+
+        Gatsby.Response response = gatsby.getResponseDetails("not-a-command");
+
+        assertTrue(response.isError());
+        assertTrue(response.getText().contains("I don't recognise that yet"));
+    }
 }
