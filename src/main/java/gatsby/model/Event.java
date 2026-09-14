@@ -20,9 +20,46 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
-        assert start != null && end != null : "An event must have both start and end date-times.";
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("An event must have both start and end date-times.");
+        }
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("An event must end after it starts.");
+        }
         this.start = start;
         this.end = end;
+    }
+
+    /**
+     * Returns the date and time at which this event starts.
+     *
+     * @return the event start date and time
+     */
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    /**
+     * Returns the date and time at which this event ends.
+     *
+     * @return the event end date and time
+     */
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    /**
+     * Returns whether another task has the same event details as this task.
+     *
+     * @param other the task to compare with
+     * @return true when both events have the same details
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return other instanceof Event
+                && super.hasSameDetails(other)
+                && start.equals(((Event) other).start)
+                && end.equals(((Event) other).end);
     }
 
     /**

@@ -16,8 +16,32 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDateTime deadline) {
         super(description);
-        assert deadline != null : "A deadline task must have a deadline date and time.";
+        if (deadline == null) {
+            throw new IllegalArgumentException("A deadline task must have a deadline date and time.");
+        }
         this.deadline = deadline;
+    }
+
+    /**
+     * Returns the date and time by which this task should be completed.
+     *
+     * @return the deadline date and time
+     */
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    /**
+     * Returns whether another task has the same deadline details as this task.
+     *
+     * @param other the task to compare with
+     * @return true when both deadlines have the same details
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return other instanceof Deadline
+                && super.hasSameDetails(other)
+                && deadline.equals(((Deadline) other).deadline);
     }
 
     /**

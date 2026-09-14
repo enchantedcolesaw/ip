@@ -288,6 +288,31 @@ bye - exit Gatsby
 Here are the commands I know:
 ```
 
+## Test 12: Reject invalid dates, duplicate parameters, and duplicate tasks
+
+Aim: Verify that malformed dates, impossible event ranges, repeated date parameters, and duplicate task details are rejected while the session remains usable.
+
+Input:
+```text
+   todo   read book
+todo read book
+deadline submit report /by 2019-02-30 1800
+deadline return book /by 2019-12-02 1800 /by 2019-12-03 1800
+event meeting /from 2019-12-02 1600 /to 2019-12-02 1600
+list
+bye
+```
+
+Expected output:
+```text
+Got it. I've added this task:
+OOPS! You already have a task with the same details.
+OOPS! Please enter a valid deadline date and time in the format yyyy-MM-dd HHmm (for example, 2019-12-02 1800).
+OOPS! The "/by" parameter can only be specified once.
+OOPS! An event's end time must be later than its start time.
+1. [T][ ] read book
+```
+
 # Manual checks
 
 These are not run by the automated runner, because the runner deletes `data/gatsby.txt` before every case to keep cases independent.

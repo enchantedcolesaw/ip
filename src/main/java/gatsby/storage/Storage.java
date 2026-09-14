@@ -1,13 +1,16 @@
 package gatsby.storage;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import gatsby.exception.EmptyPayloadException;
 import gatsby.exception.GatsbyException;
@@ -30,10 +33,10 @@ import gatsby.model.Todo;
  */
 public class Storage {
     /** The directory containing Gatsby's save file. */
-    private static final String DATA_DIRECTORY = "data";
+    private static final Path DATA_DIRECTORY = Path.of("data");
 
     /** The path of Gatsby's save file relative to the project root. */
-    private static final String DATA_FILE = "data/gatsby.txt";
+    private static final Path DATA_FILE = DATA_DIRECTORY.resolve("gatsby.txt");
 
     /** Field counts a valid saved line must have, per task type. */
     private static final int TODO_FIELDS = 3;
@@ -54,30 +57,51 @@ public class Storage {
      * @param tasks the current task list
      */
     public static void save(List<Task> tasks) {
-        assert tasks != null : "Storage must be given a task collection to save.";
+        if (tasks == null) {
+            System.out.println(" OOPS! I couldn't save your tasks because the task list was missing.");
+            return;
+        }
         for (Task task : tasks) {
-            assert task != null : "The task collection being saved must not contain null tasks.";
+            if (task == null) {
+                System.out.println(" OOPS! I couldn't save your tasks because one task was missing.");
+                return;
+            }
         }
         // On a fresh copy of the project the data folder does not exist yet,
         // so it is created on the first save rather than assumed to be there.
-        File directory = new File(DATA_DIRECTORY);
-        if (directory.exists() && !directory.isDirectory()) {
-            System.out.println(" OOPS! \"" + DATA_DIRECTORY + "\" already exists as a file,"
+        try {
+            if (Files.exists(DATA_DIRECTORY) && !Files.isDirectory(DATA_DIRECTORY)) {
+                System.out.println(" OOPS! \"" + DATA_DIRECTORY + "\" already exists as a file,"
                     + " so I have nowhere to save. Rename or remove it and I'll save again.");
-            return;
-        }
-        if (!directory.exists() && !directory.mkdirs()) {
-            System.out.println(" OOPS! I couldn't create the \"" + DATA_DIRECTORY
-                    + "\" folder, so this change isn't saved.");
-            return;
-        }
-        // try-with-resources closes the writer even if writing fails partway through.
-        try (FileWriter writer = new FileWriter(DATA_FILE)) {
-            for (Task task : tasks) {
-                writer.write(task.toFileFormat() + System.lineSeparator());
+                return;
+            }
+            Files.createDirectories(DATA_DIRECTORY);
+
+            // Write a complete temporary file first, so an interrupted save does not
+            // destroy the last known-good copy of the task list.
+            Path temporaryFile = Files.createTempFile(DATA_DIRECTORY, "gatsby-", ".tmp");
+            try {
+                Files.write(temporaryFile, tasks.stream()
+                        .map(task -> task.toFileFormat() + System.lineSeparator())
+                        .toList(), StandardCharsets.UTF_8);
+                replaceSaveFile(temporaryFile);
+            } catch (IOException | SecurityException e) {
+                Files.deleteIfExists(temporaryFile);
+                throw e;
             }
         } catch (IOException | SecurityException e) {
-            System.out.println(" OOPS! I couldn't save your tasks: " + e.getMessage());
+            String reason = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            System.out.println(" OOPS! I couldn't save your tasks: " + reason);
+        }
+    }
+
+    /** Replaces the old save file, falling back when atomic moves are unavailable. */
+    private static void replaceSaveFile(Path temporaryFile) throws IOException {
+        try {
+            Files.move(temporaryFile, DATA_FILE, StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(temporaryFile, DATA_FILE, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
@@ -93,29 +117,36 @@ public class Storage {
      * @return the tasks stored on disk, in the order they were saved
      */
     public static ArrayList<Task> load() {
-        File file = new File(DATA_FILE);
-        if (!isLoadableFile(file)) {
+        try {
+            if (!isLoadableFile()) {
+                return new ArrayList<>();
+            }
+            return readTasks(DATA_FILE);
+        } catch (SecurityException e) {
+            System.out.println(" OOPS! I don't have permission to read your saved tasks.");
             return new ArrayList<>();
         }
-        return readTasks(file);
     }
 
     /**
      * Checks whether the save path points to a file that Gatsby can load.
      *
-     * @param file the save path to inspect
      * @return true when the save file exists and is not a directory
      */
-    private static boolean isLoadableFile(File file) {
+    private static boolean isLoadableFile() {
         // A missing folder or a missing file is the normal first-run state: someone
         // has just cloned the project and has not saved anything yet. Both simply
         // mean "no tasks saved", so an empty list is returned without any warning.
-        if (!file.exists()) {
+        if (!Files.exists(DATA_FILE)) {
             return false;
         }
-        if (file.isDirectory()) {
+        if (Files.isDirectory(DATA_FILE)) {
             System.out.println(" OOPS! \"" + DATA_FILE + "\" is a folder, not my save file,"
                     + " so I'm starting with an empty list.");
+            return false;
+        }
+        if (!Files.isReadable(DATA_FILE)) {
+            System.out.println(" OOPS! I don't have permission to read your saved tasks.");
             return false;
         }
         return true;
@@ -127,20 +158,23 @@ public class Storage {
      * @param file the save file to read
      * @return the valid tasks found in the file
      */
-    private static ArrayList<Task> readTasks(File file) {
+    private static ArrayList<Task> readTasks(Path file) {
         ArrayList<Task> tasks = new ArrayList<>();
         int skippedLines = 0;
-        try (Scanner fileScanner = new Scanner(file)) {
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine().strip();
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.strip();
                 if (line.isEmpty()) {
                     continue;
                 }
                 try {
                     Task task = parseLine(line);
-                    assert task != null : "A valid save-file line must reconstruct a task.";
+                    if (tasks.stream().anyMatch(existing -> existing.hasSameDetails(task))) {
+                        throw new GatsbyException("duplicate task details");
+                    }
                     tasks.add(task);
-                } catch (GatsbyException e) {
+                } catch (GatsbyException | IllegalArgumentException e) {
                     skippedLines++;
                     System.out.println(" OOPS! I skipped a line I couldn't read in my save file: " + line);
                 }

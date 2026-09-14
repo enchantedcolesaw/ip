@@ -28,9 +28,13 @@ public class TaskList {
      * @param initialTasks tasks recovered from storage
      */
     public TaskList(List<Task> initialTasks) {
-        assert initialTasks != null : "A task list must be initialized with a task collection.";
+        if (initialTasks == null) {
+            throw new IllegalArgumentException("A task list must be initialized with a task collection.");
+        }
         for (Task task : initialTasks) {
-            assert task != null : "A task list must not contain null tasks.";
+            if (task == null) {
+                throw new IllegalArgumentException("A task list must not contain null tasks.");
+            }
         }
         this.tasks = new ArrayList<>(initialTasks);
     }
@@ -41,7 +45,9 @@ public class TaskList {
      * @param task the task to add
      */
     public void add(Task task) {
-        assert task != null : "A task list must not contain null tasks.";
+        if (task == null) {
+            throw new IllegalArgumentException("A task list must not contain null tasks.");
+        }
         int previousSize = tasks.size();
         tasks.add(task);
         assert tasks.size() == previousSize + 1 : "Adding one task must increase the list size by one.";
@@ -55,7 +61,7 @@ public class TaskList {
      * @return the task at that position
      */
     public Task get(int index) {
-        assert index >= 0 && index < tasks.size() : "Task access must use a valid zero-based index.";
+        checkIndex(index);
         return tasks.get(index);
     }
 
@@ -66,12 +72,32 @@ public class TaskList {
      * @return the removed task
      */
     public Task remove(int index) {
-        assert index >= 0 && index < tasks.size() : "Task removal must use a valid zero-based index.";
+        checkIndex(index);
         int previousSize = tasks.size();
         Task removedTask = tasks.remove(index);
         assert tasks.size() == previousSize - 1 : "Removing one task must decrease the list size by one.";
         assert removedTask != null : "Removing a task must return a non-null task.";
         return removedTask;
+    }
+
+    /**
+     * Returns whether a task with the same details is already in this list.
+     *
+     * @param candidate the task to look for
+     * @return true when an equivalent task is already present
+     */
+    public boolean containsEquivalent(Task candidate) {
+        if (candidate == null) {
+            return false;
+        }
+        return tasks.stream().anyMatch(task -> task.hasSameDetails(candidate));
+    }
+
+    /** Validates a zero-based task index before accessing the backing list. */
+    private void checkIndex(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task index must refer to an existing task.");
+        }
     }
 
     /**

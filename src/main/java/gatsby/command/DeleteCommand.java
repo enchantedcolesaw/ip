@@ -20,7 +20,7 @@ public class DeleteCommand extends Command {
      * @param payload the text entered after {@code delete}
      */
     public DeleteCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**

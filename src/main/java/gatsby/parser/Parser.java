@@ -22,17 +22,16 @@ public class Parser {
      * @return the recognized command and the text after it
      */
     public ParsedCommand parse(String input) {
-        assert input != null : "The parser requires a raw input line.";
+        if (input == null) {
+            return new ParsedCommand(CommandType.UNKNOWN, "");
+        }
         String trimmedInput = input.strip();
+        if (trimmedInput.isEmpty()) {
+            return new ParsedCommand(CommandType.UNKNOWN, "");
+        }
         String[] commandParts = trimmedInput.split("\\s+", 2);
         String payload = commandParts.length > 1 ? commandParts[1].strip() : "";
-        assert commandParts.length >= 1 && commandParts.length <= 2
-                : "Splitting an input line into at most a command and payload must produce one or two parts.";
-
-        ParsedCommand parsedCommand = new ParsedCommand(identifyCommand(trimmedInput), payload);
-        assert parsedCommand.getCommand() != null : "Every parsed input must have a command type.";
-        assert parsedCommand.getPayload() != null : "Every parsed input must have a non-null payload.";
-        return parsedCommand;
+        return new ParsedCommand(identifyCommand(trimmedInput), payload);
     }
 
     /**
@@ -54,10 +53,14 @@ public class Parser {
         if (CommandType.LIST.matchesAlias(normalizedInput)) {
             return CommandType.LIST;
         }
+        if (CommandType.HELP.matchesAlias(normalizedInput)) {
+            return CommandType.HELP;
+        }
 
         String action = normalizedInput.split("\\s+", 2)[0];
         for (CommandType command : CommandType.values()) {
             if (command != CommandType.BYE && command != CommandType.LIST
+                    && command != CommandType.HELP
                     && command.matchesAlias(action)) {
                 return command;
             }
@@ -83,8 +86,9 @@ public class Parser {
          * @param payload the text after the command
          */
         public ParsedCommand(CommandType command, String payload) {
-            assert command != null : "A parsed command cannot have a null command type.";
-            assert payload != null : "A parsed command cannot have a null payload.";
+            if (command == null || payload == null) {
+                throw new IllegalArgumentException("A parsed command must have command and payload values.");
+            }
             this.command = command;
             this.payload = payload;
         }

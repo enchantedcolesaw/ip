@@ -75,8 +75,7 @@ public class Gatsby {
      */
     private InputResult handleInput(String input, Ui ui, boolean showSeparators) {
         try {
-            String trimmedInput = input.strip();
-            if (trimmedInput.isEmpty()) {
+            if (input == null || input.isBlank()) {
                 ui.printLine(" You didn't type anything! Try \"todo read book\" or \"list\".");
                 return new InputResult(false, true);
             }
@@ -155,7 +154,7 @@ public class Gatsby {
      * @return true when the input is one of Gatsby's goodbye aliases
      */
     public boolean isExitCommand(String input) {
-        return parser.parse(input).getCommand() == CommandType.BYE;
+        return input != null && parser.parse(input).getCommand() == CommandType.BYE;
     }
 
     /** Holds the user-facing text and presentation state for one response. */

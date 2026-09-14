@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -45,9 +44,22 @@ class DeadlineCommandTest extends AbstractCommandTest {
 
     /** Verifies that malformed dates are not silently converted into deadlines. */
     @Test
-    void execute_invalidDate_throwsDateParseException() {
-        assertThrows(DateTimeParseException.class, () ->
-                new DeadlineCommand("return book /by tomorrow").execute(
+    void execute_invalidDate_throwsUserFacingException() {
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new DeadlineCommand("return book /by 2019-02-30 1800").execute(
                         new TaskList(), recordingUi()));
+
+        assertEquals(" OOPS! Please enter a valid deadline date and time in the format "
+                + "yyyy-MM-dd HHmm (for example, 2019-12-02 1800).", exception.getMessage());
+    }
+
+    /** Verifies that repeating a deadline parameter is rejected before date parsing. */
+    @Test
+    void execute_repeatedByParameter_throwsUserFacingException() {
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new DeadlineCommand("return book /by 2019-12-02 1800 /by 2019-12-03 1800")
+                        .execute(new TaskList(), recordingUi()));
+
+        assertEquals(" OOPS! The \"/by\" parameter can only be specified once.", exception.getMessage());
     }
 }

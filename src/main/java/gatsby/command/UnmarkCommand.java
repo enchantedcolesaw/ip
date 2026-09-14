@@ -17,7 +17,7 @@ public class UnmarkCommand extends Command {
      * @param payload the text entered after {@code unmark}
      */
     public UnmarkCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**
