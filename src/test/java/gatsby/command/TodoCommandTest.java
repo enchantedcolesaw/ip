@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import gatsby.exception.DuplicateTaskException;
 import gatsby.exception.EmptyPayloadException;
 import gatsby.model.TaskList;
 import gatsby.testutil.RecordingUi;
@@ -48,5 +49,18 @@ class TodoCommandTest extends AbstractCommandTest {
 
         assertEquals(" OOPS! Please leave out the \"|\" character; I use it to separate fields in my save file.",
                 exception.getMessage());
+    }
+
+    /** Verifies that task details are unique within a task list. */
+    @Test
+    void execute_duplicateDescription_throwsExceptionAndDoesNotAddTask() throws Exception {
+        TaskList tasks = new TaskList();
+        new TodoCommand("read book").execute(tasks, recordingUi());
+
+        DuplicateTaskException exception = assertThrows(DuplicateTaskException.class, () ->
+                new TodoCommand("read book").execute(tasks, recordingUi()));
+
+        assertEquals(" OOPS! You already have a task with the same details.", exception.getMessage());
+        assertEquals(1, tasks.size());
     }
 }

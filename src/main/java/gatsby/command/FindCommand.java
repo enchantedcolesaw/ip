@@ -24,7 +24,7 @@ public class FindCommand extends Command {
      * @param payload the keyword entered after {@code find}
      */
     public FindCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**

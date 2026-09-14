@@ -68,4 +68,14 @@ class ParserTest {
         assertEquals(CommandType.UNKNOWN, parser.parse("remove milk").getCommand());
         assertEquals("milk", parser.parse("remove milk").getPayload());
     }
+
+    /** Verifies that null input and help text with an unexpected argument are safe. */
+    @Test
+    void parse_nullOrHelpWithPayload_returnsUnknownCommand() {
+        Parser parser = new Parser();
+
+        assertEquals(CommandType.UNKNOWN, parser.parse(null).getCommand());
+        assertEquals(CommandType.UNKNOWN, parser.parse("help me").getCommand());
+        assertEquals(CommandType.UNKNOWN, parser.parse("list now").getCommand());
+    }
 }

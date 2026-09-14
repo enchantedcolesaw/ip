@@ -17,7 +17,7 @@ public class MarkCommand extends Command {
      * @param payload the text entered after {@code mark}
      */
     public MarkCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**

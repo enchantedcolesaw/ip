@@ -103,6 +103,32 @@ class StorageTest {
         assertTrue(output.toString().contains("2 skipped line(s)"));
     }
 
+    /** Verifies that an invalid event range in a hand-edited save file is skipped. */
+    @Test
+    void load_eventWithNonIncreasingTimes_skipsCorruptedLine() throws Exception {
+        TestSupport.writeSaveFile("E | 0 | impossible meeting | 2019-12-02T16:00 | 2019-12-02T16:00\n"
+                + "T | 0 | read book\n");
+
+        ArrayList<Task> loaded = Storage.load();
+
+        assertEquals(1, loaded.size());
+        assertEquals("read book", loaded.get(0).getTaskName());
+    }
+
+    /** Verifies that duplicate task details in a save file do not become duplicate tasks. */
+    @Test
+    void load_duplicateTaskDetails_keepsFirstTaskOnly() throws Exception {
+        TestSupport.writeSaveFile("T | 0 | read book\n"
+                + "T | 1 | read book\n"
+                + "D | 0 | read book | 2019-12-02T18:00\n");
+
+        ArrayList<Task> loaded = Storage.load();
+
+        assertEquals(2, loaded.size());
+        assertFalse(loaded.get(0).isDone());
+        assertInstanceOf(Deadline.class, loaded.get(1));
+    }
+
     /** Verifies that a data path that is a file is reported without overwriting it. */
     @Test
     void save_dataPathIsFile_reportsErrorAndPreservesExistingFile() throws Exception {

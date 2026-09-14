@@ -19,7 +19,7 @@ public class TodoCommand extends Command {
      * @param payload the text entered after {@code todo}
      */
     public TodoCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**

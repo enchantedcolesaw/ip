@@ -1,5 +1,14 @@
 package gatsby.command;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+import gatsby.exception.DuplicateTaskException;
 import gatsby.exception.EmptyMarkingException;
 import gatsby.exception.EmptyPayloadException;
 import gatsby.exception.GatsbyException;
@@ -49,10 +58,13 @@ public abstract class Command {
      * @param ui the console interaction handler
      * @param task the newly created task
      */
-    protected void addTask(TaskList tasks, Ui ui, Task task) {
+    protected void addTask(TaskList tasks, Ui ui, Task task) throws DuplicateTaskException {
         assert tasks != null : "A task-creation command requires a task list.";
         assert ui != null : "A task-creation command requires a UI handler.";
         assert task != null : "A task-creation command must create a task before adding it.";
+        if (tasks.containsEquivalent(task)) {
+            throw new DuplicateTaskException(" OOPS! You already have a task with the same details.");
+        }
         int previousSize = tasks.size();
         tasks.add(task);
         assert tasks.size() == previousSize + 1 : "A successful task addition must increase the list size by one.";
@@ -73,7 +85,7 @@ public abstract class Command {
      * @throws EmptyPayloadException when the text is empty or contains the field separator
      */
     protected String requireText(String text, String errorMessage) throws EmptyPayloadException {
-        String trimmedText = text.strip();
+        String trimmedText = text == null ? "" : text.strip();
         if (trimmedText.isEmpty()) {
             throw new EmptyPayloadException(errorMessage);
         }
@@ -98,12 +110,37 @@ public abstract class Command {
      */
     protected String[] splitOnKeyword(String payload, String keyword, String errorMessage)
             throws EmptyPayloadException {
-        String[] parts = payload.split("(?i)\\s*" + keyword + "\\s*", 2);
+        String safePayload = payload == null ? "" : payload;
+        String[] parts = safePayload.split("(?i)(?<!\\S)" + Pattern.quote(keyword) + "(?!\\S)", -1);
         if (parts.length < 2) {
             throw new EmptyPayloadException(errorMessage);
         }
-        assert parts.length == 2 : "Splitting with a limit of two must produce exactly two parts here.";
-        return parts;
+        if (parts.length > 2) {
+            throw new EmptyPayloadException(" OOPS! The \"" + keyword
+                    + "\" parameter can only be specified once.");
+        }
+        return new String[] {parts[0].strip(), parts[1].strip()};
+    }
+
+    /**
+     * Parses a user-facing date-time using Gatsby's documented format.
+     *
+     * @param value the date-time entered by the user
+     * @param description the kind of date-time being parsed
+     * @return the parsed date-time
+     * @throws EmptyPayloadException when the date-time is malformed or impossible
+     */
+    protected LocalDateTime parseDateTime(String value, String description) throws EmptyPayloadException {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("uuuu-MM-dd HHmm")
+                .toFormatter(Locale.ROOT)
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            return LocalDateTime.parse(value.strip(), formatter);
+        } catch (DateTimeParseException e) {
+            throw new EmptyPayloadException(" OOPS! Please enter a valid " + description
+                    + " in the format yyyy-MM-dd HHmm (for example, 2019-12-02 1800).");
+        }
     }
 
     /**
@@ -115,11 +152,17 @@ public abstract class Command {
      * @throws InvalidTaskException when the payload is not a valid task number
      */
     protected int parseTaskIndex(TaskList tasks, String payload) throws InvalidTaskException {
+        String normalizedPayload = payload == null ? "" : payload.strip();
+        if (!normalizedPayload.matches("[0-9]+")) {
+            throw new InvalidTaskException(" OOPS! \"" + normalizedPayload
+                    + "\" isn't a task number! :(");
+        }
         int taskNumber;
         try {
-            taskNumber = Integer.parseInt(payload);
+            taskNumber = Integer.parseInt(normalizedPayload);
         } catch (NumberFormatException e) {
-            throw new InvalidTaskException(" OOPS! \"" + payload + "\" isn't a task number! :(");
+            throw new InvalidTaskException(" OOPS! \"" + normalizedPayload
+                    + "\" is too large to be a task number! :(");
         }
         if (tasks.isEmpty()) {
             throw new InvalidTaskException(" OOPS! Your list is empty, so there's no task "
@@ -146,13 +189,14 @@ public abstract class Command {
      */
     protected void updateTaskStatus(TaskList tasks, Ui ui, String payload, boolean isMarking)
             throws GatsbyException {
-        if (payload.isEmpty()) {
+        String normalizedPayload = payload == null ? "" : payload.strip();
+        if (normalizedPayload.isEmpty()) {
             throw new EmptyMarkingException(isMarking
                     ? " OOPS! We can't be marking nothing as done!"
                     : " OOPS! We can't be marking nothing as undone!");
         }
 
-        Task task = tasks.get(parseTaskIndex(tasks, payload));
+        Task task = tasks.get(parseTaskIndex(tasks, normalizedPayload));
         boolean wasAlreadyInState = task.isDone() == isMarking;
         if (isMarking) {
             task.markDone();

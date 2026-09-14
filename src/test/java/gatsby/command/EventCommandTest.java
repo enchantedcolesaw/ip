@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -57,9 +56,32 @@ class EventCommandTest extends AbstractCommandTest {
 
     /** Verifies that malformed event times are not silently accepted. */
     @Test
-    void execute_invalidDate_throwsDateParseException() {
-        assertThrows(DateTimeParseException.class, () ->
-                new EventCommand("meeting /from today /to tomorrow")
+    void execute_invalidDate_throwsUserFacingException() {
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new EventCommand("meeting /from 2019-02-30 1400 /to 2019-02-30 1600")
                         .execute(new TaskList(), recordingUi()));
+
+        assertEquals(" OOPS! Please enter a valid event start date and time in the format "
+                + "yyyy-MM-dd HHmm (for example, 2019-12-02 1800).", exception.getMessage());
+    }
+
+    /** Verifies that an event cannot have an empty or backwards time range. */
+    @Test
+    void execute_nonIncreasingTimeRange_throwsUserFacingException() {
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new EventCommand("meeting /from 2019-12-02 1600 /to 2019-12-02 1400")
+                        .execute(new TaskList(), recordingUi()));
+
+        assertEquals(" OOPS! An event's end time must be later than its start time.", exception.getMessage());
+    }
+
+    /** Verifies that repeating an event parameter is rejected. */
+    @Test
+    void execute_repeatedFromParameter_throwsUserFacingException() {
+        EmptyPayloadException exception = assertThrows(EmptyPayloadException.class, () ->
+                new EventCommand("meeting /from 2019-12-02 1400 /from 2019-12-02 1500 "
+                        + "/to 2019-12-02 1600").execute(new TaskList(), recordingUi()));
+
+        assertEquals(" OOPS! The \"/from\" parameter can only be specified once.", exception.getMessage());
     }
 }

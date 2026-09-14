@@ -81,4 +81,20 @@ class GatsbyTest {
         assertTrue(response.isError());
         assertTrue(response.getText().contains("I don't recognise that yet"));
     }
+
+    /** Verifies that invalid dates and duplicate tasks are reported without ending the session. */
+    @Test
+    void getResponseDetails_invalidDateAndDuplicateTask_returnsFriendlyErrors() {
+        Gatsby gatsby = new Gatsby();
+
+        Gatsby.Response invalidDate = gatsby.getResponseDetails("deadline submit report /by 2019-02-30 1800");
+        Gatsby.Response firstTask = gatsby.getResponseDetails("todo read book");
+        Gatsby.Response duplicateTask = gatsby.getResponseDetails("todo read book");
+
+        assertTrue(invalidDate.isError());
+        assertTrue(invalidDate.getText().contains("Please enter a valid deadline date and time"));
+        assertTrue(!firstTask.isError());
+        assertTrue(duplicateTask.isError());
+        assertTrue(duplicateTask.getText().contains("same details"));
+    }
 }

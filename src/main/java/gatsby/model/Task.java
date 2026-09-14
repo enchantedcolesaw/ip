@@ -14,8 +14,9 @@ public class Task {
      * @param description the task description
      */
     public Task(String description) {
-        assert description != null && !description.isBlank()
-                : "Every task must have a non-blank description.";
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Every task must have a non-blank description.");
+        }
         this.description = description;
         this.isDone = false;
     }
@@ -46,6 +47,20 @@ public class Task {
      */
     public String getTaskName() {
         return this.description;
+    }
+
+    /**
+     * Returns whether another task has the same type and description as this task.
+     *
+     * Subclasses extend this comparison with their date or date-time fields.
+     * Completion status is deliberately not considered task detail.
+     *
+     * @param other the task to compare with
+     * @return true when both tasks have the same task details
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null && getClass().equals(other.getClass())
+                && this.description.equals(other.description);
     }
 
     /**

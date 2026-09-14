@@ -1,8 +1,8 @@
 package gatsby.command;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+import gatsby.exception.EmptyPayloadException;
 import gatsby.exception.GatsbyException;
 import gatsby.model.Event;
 import gatsby.model.TaskList;
@@ -21,7 +21,7 @@ public class EventCommand extends Command {
      * @param payload the text entered after {@code event}
      */
     public EventCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**
@@ -43,9 +43,11 @@ public class EventCommand extends Command {
                 " son this event has no start time after /from -_-!");
         String end = requireText(timeParts[1],
                 " son this event has no end time after /to -_-!");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        LocalDateTime startDate = LocalDateTime.parse(start.replace('/', '-'), formatter);
-        LocalDateTime endDate = LocalDateTime.parse(end.replace('/', '-'), formatter);
+        LocalDateTime startDate = parseDateTime(start, "event start date and time");
+        LocalDateTime endDate = parseDateTime(end, "event end date and time");
+        if (!startDate.isBefore(endDate)) {
+            throw new EmptyPayloadException(" OOPS! An event's end time must be later than its start time.");
+        }
         addTask(tasks, ui, new Event(description, startDate, endDate));
     }
 }

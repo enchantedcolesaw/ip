@@ -1,7 +1,6 @@
 package gatsby.command;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import gatsby.exception.GatsbyException;
 import gatsby.model.Deadline;
@@ -21,7 +20,7 @@ public class DeadlineCommand extends Command {
      * @param payload the text entered after {@code deadline}
      */
     public DeadlineCommand(String payload) {
-        this.payload = payload;
+        this.payload = payload == null ? "" : payload.strip();
     }
 
     /**
@@ -39,8 +38,7 @@ public class DeadlineCommand extends Command {
                 " son this deadline has no description -_-!");
         String deadline = requireText(parts[1],
                 " son this deadline has no date after /by -_-!");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        LocalDateTime date = LocalDateTime.parse(deadline.replace('/', '-'), formatter);
+        LocalDateTime date = parseDateTime(deadline, "deadline date and time");
         addTask(tasks, ui, new Deadline(description, date));
     }
 }
